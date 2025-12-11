@@ -64,7 +64,6 @@ def main():
         yaml_files = get_yaml_files(chart)
 
         for check in checks:
-            # Tous les checks reçoivent maintenant: (chart_path, yaml_files)
             result = check(yaml_files)
             status = "✔️ OK" if result["success"] else "❌ FAIL"
             print(f"  - {result['name']}: {status} ({result['details']})")

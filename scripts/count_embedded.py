@@ -35,6 +35,7 @@ def check(yaml_files):
 
         except yaml.YAMLError as e:
             ##TODO: trouver une solution later
+            ## le module yaml lève une exception si le fichier n'est pas un YAML valide, et c'est le cas pour tous les yaml de templates
             continue
 
     # Résultat global
