@@ -33,6 +33,21 @@ def get_charts_list():
     ]
 
 
+def get_yaml_files(chart_path):
+    """
+    Retourne tous les fichiers .yaml ou .yml d'une chart Helm,
+    en ignorant les templates Go (.tpl).
+    """
+    yaml_files = []
+
+    for root, dirs, files in os.walk(chart_path):
+        for file in files:
+            if file.endswith((".yaml", ".yml")):  # Only YAML
+                yaml_files.append(os.path.join(root, file))
+
+    return yaml_files
+
+
 def main():
     print("Chargement des checks...")
     checks = load_check_functions()
@@ -45,8 +60,12 @@ def main():
 
     for chart in charts:
         print(f"Chart : {chart}")
+
+        yaml_files = get_yaml_files(chart)
+
         for check in checks:
-            result = check(chart)
+            # Tous les checks reçoivent maintenant: (chart_path, yaml_files)
+            result = check(yaml_files)
             status = "✔️ OK" if result["success"] else "❌ FAIL"
             print(f"  - {result['name']}: {status} ({result['details']})")
         print("")

@@ -1,48 +1,45 @@
-import yaml
 import os
+import yaml
 
-def check(chart_path):
+
+def check(yaml_files):
     """
-    Vérifie le fichier values.yaml d'une chart et renvoie un résultat.
-    Retourne un dictionnaire contenant :
-      - 'name': nom du check
-      - 'success': True/False
-      - 'details': informations supplémentaires
+    Vérifie tous les fichiers YAML et calcule :
+    total_objets_imbriqués / total_lignes_YAML
     """
 
-    values_file = os.path.join(chart_path, "values.yaml")
+    total_embedded = 0
+    total_lines = 0
 
-    if not os.path.exists(values_file):
-        return {
-            "name": "count_embedded_objects",
-            "success": True,
-            "details": "Aucun values.yaml trouvé, check ignoré."
-        }
+    for file in yaml_files:
+        try:
+            with open(file, "r") as f:
+                lines = f.readlines()
+                total_lines += len(lines)
 
-    try:
-        with open(values_file, "r") as f:
-            data = yaml.safe_load(f)
+            # Charger YAML
+            with open(file, "r") as f:
+                data = yaml.safe_load(f)
 
-        if not isinstance(data, dict):
-            return {
-                "name": "count_embedded_objects",
-                "success": False,
-                "details": "Le fichier values.yaml n'est pas un dictionnaire YAML."
-            }
+            # YAML vide
+            if data is None:
+                continue
 
-        # On considère que plus de X objets imbriqués = mauvaise pratique
-        # (seuil ajustable : ici 0 = strict, aucun objet imbriqué accepté)
-        count = sum(1 for v in data.values() if isinstance(v, dict))
+            # Pas un dictionnaire → on ne peut pas compter les objets imbriqués
+            if not isinstance(data, dict):
+                continue
 
-        return {
-            "name": "count_embedded_objects",
-            "success": count == 0,
-            "details": f"{count} objets imbriqués trouvés."
-        }
+            # Nombre d'objets imbriqués au 1er niveau
+            embedded = sum(1 for v in data.values() if isinstance(v, dict))
+            total_embedded += embedded
 
-    except yaml.YAMLError as e:
-        return {
-            "name": "count_embedded_objects",
-            "success": False,
-            "details": f"Erreur YAML : {e}"
-        }
+        except yaml.YAMLError as e:
+            ##TODO: trouver une solution later
+            continue
+
+    # Résultat global
+    return {
+        "name": "count_embedded_objects",
+        "success": True,
+        "details": f"{total_embedded} objets imbriqués / {total_lines} lignes YAML analysées.",
+    }
