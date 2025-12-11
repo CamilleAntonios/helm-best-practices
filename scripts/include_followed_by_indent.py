@@ -1,16 +1,34 @@
 import os
 import re
 
-def check(chart_path):
+def check(yaml_files):
     """
-    Vérifie que chaque '{{ include ... }}' est suivi d'un '| indent N' ou '| nindent N'.
-    
-    Retourne :
-      - name: nom du check
-      - success: True/False
-      - details: liste des violations détectées
+    Compatible avec main() :
+    main() envoie une liste de chemins YAML provenant d'une chart.
+
+    Ce check doit alors :
+    - retrouver le chemin racine de la chart
+    - analyser les fichiers dans <chart>/templates/
     """
 
+    if not yaml_files:
+        return {
+            "name": "include_indent_required",
+            "success": True,
+            "details": "Aucun fichier YAML fourni, check ignoré."
+        }
+
+    # On déduit la chart à partir du premier fichier YAML
+    # Exemple : charts/mychart/values.yaml → charts/mychart
+    chart_path = os.path.dirname(yaml_files[0])
+    while chart_path and os.path.basename(chart_path) not in ("charts", ""):
+        parent = os.path.dirname(chart_path)
+        # On s'arrête lorsque parent == "charts"
+        if os.path.basename(parent) == "charts":
+            break
+        chart_path = parent
+
+    # Le dossier templates est à l'intérieur de la chart
     templates_dir = os.path.join(chart_path, "templates")
 
     if not os.path.exists(templates_dir):
@@ -48,14 +66,14 @@ def check(chart_path):
 
                 pipe_section = match.group(1)
 
-                # Cas 1 : pas de pipe du tout → erreur
+                # Cas 1 : pas de pipe → erreur
                 if "|" not in pipe_section:
                     violations.append(
                         f"{filepath}:{i+1} → include sans '| indent N' ou '| nindent N'."
                     )
                     continue
 
-                # Cas 2 : pipe mais pas indent/nindent → erreur
+                # Cas 2 : pipe mais sans indent/nindent → erreur
                 if not indent_pattern.search(pipe_section):
                     violations.append(
                         f"{filepath}:{i+1} → include utilise un pipe mais sans indent/nindent valide."
@@ -68,6 +86,7 @@ def check(chart_path):
         "details": (
             "Aucune violation détectée."
             if not violations
-            else f"{len(violations)} problèmes trouvés"
+            else f"{len(violations)} problèmes trouvés. "
         )
     }
+

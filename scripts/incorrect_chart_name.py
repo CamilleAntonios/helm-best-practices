@@ -2,17 +2,29 @@ import yaml
 import os
 import re
 
+def check(yaml_files):
+    """
+    Compatible avec main() qui fournit une liste de fichiers YAML d'une chart.
 
-def check(chart_path):
+    Vérifie que le champ 'name' dans Chart.yaml respecte le regex Helm :
+        ^[a-z0-9-]+$
     """
-    Vérifie que le champ 'name' dans Chart.yaml respecte la bonne pratique :
-    - seulement lettres minuscules, chiffres, tirets : ^[a-z0-9-]+$
-    
-    Retourne un dictionnaire :
-      - name: nom du check
-      - success: True/False
-      - details: informations supplémentaires
-    """
+
+    if not yaml_files:
+        return {
+            "name": "chart_name_format",
+            "success": True,
+            "details": "Aucun fichier YAML fourni, check ignoré."
+        }
+
+    # On retrouve le chemin racine de la chart
+    # Exemple : charts/mychart/templates/deployment.yaml → charts/mychart
+    chart_path = os.path.dirname(yaml_files[0])
+    while chart_path and os.path.basename(chart_path) not in ("charts", ""):
+        parent = os.path.dirname(chart_path)
+        if os.path.basename(parent) == "charts":
+            break
+        chart_path = parent
 
     chart_file = os.path.join(chart_path, "Chart.yaml")
 
@@ -43,7 +55,7 @@ def check(chart_path):
                 "details": "Aucun champ 'name' trouvé dans Chart.yaml."
             }
 
-        # Regex correcte imposée par Helm
+        # Regex conforme aux exigences Helm
         pattern = r"^[a-z0-9-]+$"
 
         if re.fullmatch(pattern, name):
@@ -53,7 +65,7 @@ def check(chart_path):
                 "details": f"Le nom '{name}' est conforme."
             }
 
-        # Mauvaise pratique : nom invalide
+        # Nom invalide
         return {
             "name": "chart_name_format",
             "success": False,
