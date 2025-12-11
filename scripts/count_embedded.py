@@ -32,6 +32,7 @@ def check(yaml_files):
             # Nombre d'objets imbriqués au 1er niveau
             embedded = sum(1 for v in data.values() if isinstance(v, dict))
             total_embedded += embedded
+            print(f"{file}: {embedded} objets imbriqués trouvés.")
 
         except yaml.YAMLError as e:
             ##TODO: trouver une solution later
@@ -41,6 +42,6 @@ def check(yaml_files):
     # Résultat global
     return {
         "name": "count_embedded_objects",
-        "success": True,
+        "success": total_embedded == 0,
         "details": f"{total_embedded} objets imbriqués / {total_lines} lignes YAML analysées.",
     }
