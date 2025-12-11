@@ -2,7 +2,7 @@ import os
 import yaml
 
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie tous les fichiers YAML et calcule :
     total_objets_imbriqués / total_lignes_YAML

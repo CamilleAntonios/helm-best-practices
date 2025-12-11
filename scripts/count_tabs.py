@@ -1,7 +1,7 @@
 import os
 
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie toutes les YAML d'une chart pour compter les lignes contenant
     des tabulations. Retourne :

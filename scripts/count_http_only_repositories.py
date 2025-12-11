@@ -5,7 +5,7 @@ Verification de la mauvaise pratique :
 'Il ne faut pas utiliser des repositories en HTTP uniquement (sans HTTPS)'
 """
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie toutes les YAML d'une chart pour compter les lignes contenant
     des tabulations. Retourne :
