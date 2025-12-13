@@ -31,5 +31,6 @@ def check(yaml_files, chart):
     return {
         "name": "count_tabs",
         "success": total_tab_lines == 0,
+        "code_smells": total_tab_lines,
         "details": f"{total_tab_lines} lignes / {total_lines} contiennent une tabulation.",
     }

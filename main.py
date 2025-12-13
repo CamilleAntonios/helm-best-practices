@@ -47,6 +47,21 @@ def get_yaml_files(chart_path):
 
     return yaml_files
 
+def computeLinesOfChart(chart_path):
+    total_lines = 0
+
+    for root, dirs, files in os.walk(chart_path):
+        for file in files:
+            if file.endswith((".yaml", ".yml", ".tpl")):  # Only Useful Files
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                        total_lines += len(lines)
+                except Exception as e:
+                    print(f"Erreur lors de la lecture du fichier {file_path} : {e}")
+
+    return total_lines
 
 def main():
     print("Chargement des checks...")
@@ -57,17 +72,26 @@ def main():
     print(f"{len(charts)} charts trouvées.")
 
     print("\n--- Résultats ---\n")
-
+    codeSmellsPerChart = {}
+    linesPerChart = {}
     for chart in charts:
         print(f"Chart : {chart}")
-
+        codeSmellsPerChart[chart] = 0
+        linesPerChart[chart] = computeLinesOfChart(chart)    
         yaml_files = get_yaml_files(chart)
 
         for check in checks:
             result = check(yaml_files, chart)
             status = "✔️ OK" if result["success"] else "❌ FAIL"
+            codeSmellsPerChart[chart] += result["code_smells"]
             print(f"  - {result['name']}: {status} ({result['details']})")
         print("")
+        print("total code smells for chart", chart, ":", codeSmellsPerChart[chart])
+        print("")
+        
+    print("--- Résumé des code smells par chart ---")
+    for chart, code_smells in codeSmellsPerChart.items():
+        print(f"Chart: {chart} → Code Smells: {code_smells}, Total Lines: {linesPerChart[chart]}, ratio: {code_smells/linesPerChart[chart] if linesPerChart[chart]>0 else 0:.2%}")
 
 
 if __name__ == "__main__":

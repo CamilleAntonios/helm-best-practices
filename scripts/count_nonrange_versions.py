@@ -14,7 +14,7 @@ def is_the_dependency_version_nonrange(version):
     nonrange_indicators = ["~", "^", ">=", "<=", "*"]
     return not any(indicator in version for indicator in nonrange_indicators)
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie toutes les YAML d'une chart pour compter les lignes contenant
     des versions non-range. Retourne :
@@ -60,5 +60,6 @@ def check(yaml_files):
     return {
         "name": "count_nonrange_versions",
         "success": total_nonrange_versions_lines == 0,
+        "code_smells": total_nonrange_versions_lines,
         "details": f"{total_nonrange_versions_lines} lignes / {total_lines} contiennent des versions non-range.",
     }
