@@ -2,7 +2,7 @@ import yaml
 import os
 import re
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Compatible avec main() qui fournit une liste de fichiers YAML d'une chart.
 
@@ -14,6 +14,7 @@ def check(yaml_files):
         return {
             "name": "chart_name_format",
             "success": True,
+            "code_smells": 0,
             "details": "Aucun fichier YAML fourni, check ignoré."
         }
 
@@ -32,6 +33,7 @@ def check(yaml_files):
         return {
             "name": "chart_name_format",
             "success": True,
+            "code_smells": 0,
             "details": "Aucun Chart.yaml trouvé, check ignoré."
         }
 
@@ -43,6 +45,7 @@ def check(yaml_files):
             return {
                 "name": "chart_name_format",
                 "success": False,
+                "code_smells": 1,
                 "details": "Le fichier Chart.yaml n'est pas un dictionnaire YAML."
             }
 
@@ -52,6 +55,7 @@ def check(yaml_files):
             return {
                 "name": "chart_name_format",
                 "success": False,
+                "code_smells": 1,
                 "details": "Aucun champ 'name' trouvé dans Chart.yaml."
             }
 
@@ -62,6 +66,7 @@ def check(yaml_files):
             return {
                 "name": "chart_name_format",
                 "success": True,
+                "code_smells": 0,
                 "details": f"Le nom '{name}' est conforme."
             }
 
@@ -69,6 +74,7 @@ def check(yaml_files):
         return {
             "name": "chart_name_format",
             "success": False,
+            "code_smells": 1,
             "details": (
                 f"Le nom '{name}' est invalide. "
                 f"Il doit respecter le regex : {pattern}"
@@ -79,5 +85,6 @@ def check(yaml_files):
         return {
             "name": "chart_name_format",
             "success": False,
+            "code_smells": 1,
             "details": f"Erreur YAML : {e}"
         }

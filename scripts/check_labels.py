@@ -16,7 +16,7 @@ NON_MANIFEST_FILES = [
 LABEL_HELPER_PATTERN = re.compile(r'include\s+"[^"]*labels"')
 
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie que chaque manifest YAML applique les labels recommandés,
     soit via un helper, soit via les labels présents directement.
@@ -53,6 +53,7 @@ def check(yaml_files):
         return {
             "name": "standard_labels",
             "success": True,
+            "code_smells": 0,
             "details": "Tous les manifests appliquent les labels recommandés (via helper ou labels directs).",
         }
 
@@ -63,5 +64,6 @@ def check(yaml_files):
     return {
         "name": "standard_labels",
         "success": False,
-        "details": "\n".join(detail_lines),
+        "code_smells": len(failures),
+        "details": f"labels missing for {len(failures)} files"
     }

@@ -1,7 +1,7 @@
 import os
 
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie toutes les YAML d'une chart pour compter les lignes contenant
     des tabulations. Retourne :
@@ -31,5 +31,6 @@ def check(yaml_files):
     return {
         "name": "count_tabs",
         "success": total_tab_lines == 0,
+        "code_smells": total_tab_lines,
         "details": f"{total_tab_lines} lignes / {total_lines} contiennent une tabulation.",
     }
