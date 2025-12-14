@@ -5,7 +5,7 @@ Verification de la mauvaise pratique :
 'Il ne faut pas utiliser des repositories en HTTP uniquement (sans HTTPS)'
 """
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Vérifie toutes les YAML d'une chart pour compter les lignes contenant
     des tabulations. Retourne :
@@ -29,11 +29,13 @@ def check(yaml_files):
             return {
                 "name": "count_http_only_repositories",
                 "success": False,
+                "code_smells": 0,
                 "details": f"Erreur lors de la lecture du fichier {file} : {e}",
             }
 
     return {
         "name": "count_http_only_repositories",
         "success": total_http_repositories == 0,
+        "code_smells": total_http_repositories,
         "details": f"{total_http_repositories} lignes / {total_lines} contiennent des repositories qui sont en HTTP uniquement.",
     }

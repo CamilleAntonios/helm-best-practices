@@ -1,7 +1,7 @@
 import os
 import re
 
-def check(yaml_files):
+def check(yaml_files, chart):
     """
     Compatible avec main() :
     main() envoie une liste de chemins YAML provenant d'une chart.
@@ -15,6 +15,7 @@ def check(yaml_files):
         return {
             "name": "include_indent_required",
             "success": True,
+            "code_smells": 0,
             "details": "Aucun fichier YAML fourni, check ignoré."
         }
 
@@ -35,6 +36,7 @@ def check(yaml_files):
         return {
             "name": "include_indent_required",
             "success": True,
+            "code_smells": 0,
             "details": "Aucun dossier templates/ trouvé, check ignoré."
         }
 
@@ -83,6 +85,7 @@ def check(yaml_files):
     return {
         "name": "include_indent_required",
         "success": len(violations) == 0,
+        "code_smells": len(violations),
         "details": (
             "Aucune violation détectée."
             if not violations
