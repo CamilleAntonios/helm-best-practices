@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "config": {
+      "type": "object",
+      "required": [
+        "containerdSocketPath",
+        "crioSocketPath",
+        "dockerSocketPath",
+        "experimental",
+        "eventsBufferLength"
+      ],
+      "properties": {
+        "containerdSocketPath": {
+          "type": "string"
+        },
+        "crioSocketPath": {
+          "type": "string"
+        },
+        "dockerSocketPath": {
+          "type": "string"
+        },
+        "podmanSocketPath": {
+          "type": "string"
+        },
+        "experimental": {
+          "type": "boolean"
+        },
+        "eventsBufferLength": {
+          "type": ["integer", "string"]
+        },
+        "verifyGadgets": {
+          "type": "boolean",
+          "deprecated": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "gadgetsPublicKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "deprecated": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "allowedGadgets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "deprecated": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "disallowGadgetsPulling": {
+          "type": "boolean",
+          "deprecated": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "otelMetricsListen": {
+          "type": "boolean",
+          "deprecatred": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "otelMetricsAddress": {
+          "type": "string",
+          "deprecated": true,
+          "description": "The value is deprecated and will be removed in +v0.43.0. Use operator configuration instead"
+        },
+        "operator": {
+          "type": "object"
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "required": [
+        "repository",
+        "pullPolicy"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "pullPolicy": {
+          "type": "string"
+        },
+        "pullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
