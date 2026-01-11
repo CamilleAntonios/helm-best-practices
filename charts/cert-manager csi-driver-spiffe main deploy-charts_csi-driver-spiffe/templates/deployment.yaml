@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cert-manager-csi-driver-spiffe.name" . }}-approver
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "cert-manager-csi-driver-spiffe.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.app.approver.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "cert-manager-csi-driver-spiffe.name" . }}-approver
+  template:
+    metadata:
+      labels:
+        app: {{ include "cert-manager-csi-driver-spiffe.name" . }}-approver
+        {{- include "cert-manager-csi-driver-spiffe.labels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+
+      serviceAccountName: {{ include "cert-manager-csi-driver-spiffe.name" . }}-approver
+      containers:
+      - name: {{ include "cert-manager-csi-driver-spiffe.name" . }}-approver
+        image: "{{ template "image-approver" (tuple .Values.image $.Chart.AppVersion) }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.app.approver.metrics.port }}
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.app.approver.readinessProbe.port }}
+            path: "/readyz"
+          initialDelaySeconds: 3
+          periodSeconds: 7
+        args:
+          - --log-level={{ .Values.app.logLevel }}
+          - --csi-driver-name={{ .Values.app.name }}
+
+          - --certificate-request-duration={{ .Values.app.certificateRequestDuration }}
+          - --trust-domain={{ .Values.app.trustDomain }}
+
+          - --leader-election-namespace=$(POD_NAMESPACE)
+          - "--metrics-bind-address=:{{.Values.app.approver.metrics.port}}"
+          - "--readiness-probe-bind-address=:{{.Values.app.approver.readinessProbe.port}}"
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+{{- toYaml .Values.app.approver.resources | nindent 12 }}
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+          readOnlyRootFilesystem: true
+
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with  .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

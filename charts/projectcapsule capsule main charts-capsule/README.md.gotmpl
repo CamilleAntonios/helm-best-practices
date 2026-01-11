@@ -1,0 +1,120 @@
+# Deploying the Capsule Operator
+
+Use the Capsule Operator for easily implementing, managing, and maintaining multitenancy and access control in Kubernetes. Please read our installation guide:
+
+* [https://projectcapsule.dev/docs/operating/setup/installation/](https://projectcapsule.dev/docs/operating/setup/installation/)
+
+## Major Changes
+
+In the following sections you see actions which are required when you are upgrading to a specific version.
+
+### Upgrading to 0.7.x
+
+Introduces a new methode to manage all capsule CRDs and their lifecycle. We are no longer relying on the [native CRD hook with the Helm Chart](https://helm.sh/docs/chart_best_practices/custom_resource_definitions/#some-caveats-and-explanations). The hook only allows to manage CRDs on install and uninstall but we can't deliver updates to the CRDs.
+When you newly install the chart we recommend to set  `crds.install` to `true`. This will manage the CRDs with the Helm Chart. This behavior is the new default.
+
+#### Changed Values
+
+The following Values have changed key or Value:
+
+  * All values from previous releases under `webhooks` have moved to `webhooks.hooks`.
+  * `mutatingWebhooksTimeoutSeconds` has moved to `webhooks.mutatingWebhooksTimeoutSeconds`
+  * `validatingWebhooksTimeoutSeconds` has moved to `webhooks.validatingWebhooksTimeoutSeconds`
+
+## Values
+
+### CustomResourceDefinition Lifecycle
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if (hasPrefix "crds" .Key)  }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+### Global Parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if (hasPrefix "global" .Key)  }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+### General Parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if not (or (hasPrefix "global" .Key) (hasPrefix "manager" .Key) (hasPrefix "crds" .Key) (hasPrefix "monitoring" .Key) (hasPrefix "webhook" .Key) (hasPrefix "capsule-proxy" .Key) )  }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+### Manager Parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if hasPrefix "manager" .Key }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+### Monitoring Parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if hasPrefix "monitoring" .Key }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+### Admission Webhook Parameters
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+  {{- if hasPrefix "webhook" .Key }}
+| {{ .Key }} | {{ .Type }} | {{ if .Default }}{{ .Default }}{{ else }}{{ .AutoDefault }}{{ end }} | {{ if .Description }}{{ .Description }}{{ else }}{{ .AutoDescription }}{{ end }} |
+  {{- end }}
+{{- end }}
+
+## Notes on installing Custom Resource Definitions with Helm3
+
+Capsule, as many other add-ons, defines its own set of Custom Resource Definitions (CRDs). Helm3 removed the old CRDs installation method for a more simple methodology. In the Helm Chart, there is now a special directory called `crds` to hold the CRDs. These CRDs are not templated, but will be installed by default when running a `helm install` for the chart. If the CRDs already exist (for example, you already executed `helm install`), it will be skipped with a warning. When you wish to skip the CRDs installation, and do not see the warning, you can pass the `--skip-crds` flag to the `helm install` command.
+
+## Cert-Manager integration
+
+You can enable the generation of certificates using `cert-manager` as follows.
+
+```
+helm upgrade --install capsule projectcapsule/capsule --namespace capsule-system --create-namespace \
+  --set "certManager.generateCertificates=true" \
+  --set "tls.create=false" \
+  --set "tls.enableController=false"
+```
+
+With the usage of `tls.enableController=false` value, you're delegating the injection of the Validating and Mutating Webhooks' CA to `cert-manager`.
+Since Helm3 doesn't allow to template _CRDs_, you have to patch manually the Custom Resource Definition `tenants.capsule.clastix.io` adding the proper annotation (YMMV).
+
+```yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.5.0
+    cert-manager.io/inject-ca-from: capsule-system/capsule-webhook-cert
+  creationTimestamp: "2022-07-22T08:32:51Z"
+  generation: 45
+  name: tenants.capsule.clastix.io
+  resourceVersion: "9832"
+  uid: 61e287df-319b-476d-88d5-bdb8dc14d4a6
+```
+
+## More
+
+See Capsule [tutorial](https://github.com/projectcapsule/capsule/blob/master/docs/content/general/tutorial.md) for more information about how to use Capsule.
