@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- if not .Values.skipLabels }}
+    {{- include "gadget.labels" . | nindent 4 }}
+    {{- end }}
+    k8s-app: {{ include "gadget.fullname" . }}
+  name: {{ include "gadget.fullname" . }}
+  namespace: {{ include "gadget.namespace" . }}
+data:
+    config.yaml: |-
+      events-buffer-length: {{ .Values.config.eventsBufferLength }}
+      containerd-socketpath: {{ .Values.config.containerdSocketPath }}
+      crio-socketpath: {{ .Values.config.crioSocketPath }}
+      docker-socketpath: {{ .Values.config.dockerSocketPath }}
+      podman-socketpath: {{ .Values.config.podmanSocketPath }}
+      gadget-namespace: {{ .Values.config.gadgetNamespace }}
+      daemon-log-level: {{ .Values.config.daemonLogLevel }}
+      operator:
+        {{- include "gadget.operatorConfig" . | nindent 8 -}}

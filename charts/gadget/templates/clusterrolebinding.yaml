@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "gadget.fullname" . }}-cluster-role-binding
+  labels:
+    {{- if not .Values.skipLabels }}
+    {{- include "gadget.labels" . | nindent 4 }}
+    {{- end }}
+    k8s-app: {{ include "gadget.fullname" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "gadget.fullname" . }}-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "gadget.fullname" . }}
+    namespace: {{ include "gadget.namespace" . }}
