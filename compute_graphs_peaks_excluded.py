@@ -104,7 +104,7 @@ plot_scatter(
 plt.figure()
 df_filtered = filter_top95(df, "days_ago", "ratio")
 plt.scatter(df_filtered["days_ago"], df_filtered["ratio"], alpha=0.6)
-plt.xlabel("Dernier commit (days ago)")
+plt.xlabel("Derniere release (days ago)")
 plt.ylabel("% de mauvaises pratiques par ligne")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_days_ago.png"))

@@ -39,6 +39,7 @@ with open(CODE_SMELLS_FILE, newline="", encoding="utf-8") as f:
                 "origin": info["origin"],
                 "code_smells": row.get("Code Smells"),
                 "total_lines": row.get("Total Lines"),
+                "total_files": row.get("Total Files"),
                 "ratio": row.get("Ratio"),
             })
 
@@ -50,7 +51,8 @@ fieldnames = [
     "origin",
     "code_smells",
     "total_lines",
-    "ratio",
+    "total_files",
+    "ratio"
 ]
 
 with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:

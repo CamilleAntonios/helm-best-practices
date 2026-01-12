@@ -13,3 +13,4 @@ python aggregate_csv.py
 # Création des graphs
 python compute_graphs.py
 python compute_graphs_peaks_excluded.py
+python compute_graphs_ratio_per_file.py

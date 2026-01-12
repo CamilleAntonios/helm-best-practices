@@ -46,7 +46,7 @@ ambient,https://artifacthub.io/packages/helm/istio-official/ambient,14,6,https:/
 microcks,https://artifacthub.io/packages/helm/microcks/microcks,28,5,https://github.com/microcks/microcks/tree/master/install/kubernetes/microcks,commu,,,
 cert-manager-istio-csr,https://artifacthub.io/packages/helm/cert-manager/cert-manager-istio-csr,26,4,https://github.com/cert-manager/istio-csr/tree/main/deploy/charts/istio-csr,entreprise,,,
 keptn,https://artifacthub.io/packages/helm/lifecycle-toolkit/keptn,300,4,https://github.com/keptn/lifecycle-toolkit/tree/main/chart,entreprise,,,
-capsule,https://artifacthub.io/packages/helm/projectcapsule/capsule,17,3,https://github.com/projectcapsule/capsule,entreprise,,,
+capsule,https://artifacthub.io/packages/helm/projectcapsule/capsule,17,3,https://github.com/projectcapsule/capsule,commu,,,
 prometheus-json-exporter,https://artifacthub.io/packages/helm/prometheus-community/prometheus-json-exporter,150,3,https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-json-exporter,commu,,,
 linstor-cluster,https://artifacthub.io/packages/helm/piraeus-charts/linstor-cluster,90,2,https://github.com/piraeusdatastore/helm-charts/tree/main/charts,entreprise,,,
 perses,https://artifacthub.io/packages/helm/perses/perses,27,2,https://github.com/perses/helm-charts,commu,,,
@@ -55,7 +55,6 @@ kuadrant-operator,https://artifacthub.io/packages/helm/kuadrant/kuadrant-operato
 linstor-affinity-controller,https://artifacthub.io/packages/helm/piraeus-charts/linstor-affinity-controller,180,1,https://github.com/piraeusdatastore/helm-charts/tree/main/charts/linstor-affinity-controller,entreprise,,,
 alertmanager-snmp-notifier,https://artifacthub.io/packages/helm/prometheus-community/alertmanager-snmp-notifier,150,0,https://github.com/maxwo/snmp_notifier/tree/main/scripts/kubernetes,commu,pas vraiment de chart a l'interieur ,,
 authorino-operator,https://artifacthub.io/packages/helm/kuadrant/authorino-operator,90,0,https://github.com/Kuadrant/authorino-operator/tree/main/charts/authorino-operator,entreprise,,,
-capsule,capsule 0.12.4 · capsule/capsule,17,0,https://github.com/projectcapsule/capsule/tree/main/charts/capsule,commu,,,
 capsule-proxy,https://artifacthub.io/packages/helm/projectcapsule/capsule-proxy,27,0,à télecharger,commu,,,
 cert-manager-csi-driver-spiffe,https://artifacthub.io/packages/helm/cert-manager/cert-manager-csi-driver-spiffe,26,0,https://github.com/cert-manager/csi-driver-spiffe/tree/main/deploy/charts/csi-driver-spiffe,entreprise,,,
 dns-operator,https://artifacthub.io/packages/helm/kuadrant/dns-operator,90,0,https://github.com/Kuadrant/dns-operator/tree/main/charts/dns-operator,entreprise,istio/manifests/charts/istio-cni at master · istio/istio,istio/manifests/charts/istio-control/istio-discovery at master · istio/istio,istio/manifests/charts/ztunnel at master · istio/istio
