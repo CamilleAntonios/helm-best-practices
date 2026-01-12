@@ -1,3 +1,7 @@
 .idea/
 *.pyc
 code_smells_report.csv
+final_report.csv
+graphs/
+graphs_with_peaks_excluded/
+graphs_ratio_per_file/
