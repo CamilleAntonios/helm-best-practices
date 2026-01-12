@@ -1,5 +1,6 @@
 import os
 import importlib.util
+import csv
 
 SCRIPTS_FOLDER = "scripts"
 CHARTS_FOLDER = "charts"
@@ -93,6 +94,13 @@ def main():
     for chart, code_smells in codeSmellsPerChart.items():
         print(f"Chart: {chart} → Code Smells: {code_smells}, Total Lines: {linesPerChart[chart]}, ratio: {code_smells/linesPerChart[chart] if linesPerChart[chart]>0 else 0:.2%}")
 
+    with open("code_smells_report.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["Chart", "Code Smells", "Total Lines", "Ratio"])
+        for chart, code_smells in codeSmellsPerChart.items():
+            ratio = code_smells / linesPerChart[chart] if linesPerChart[chart] > 0 else 0
+            chart_name_without_charts_prefix = chart.split("/")[1] # remove the "charts/" prefix
+            writer.writerow([chart_name_without_charts_prefix, code_smells, linesPerChart[chart], f"{ratio:.2%}"])
 
 if __name__ == "__main__":
     main()
