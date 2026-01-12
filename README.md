@@ -1,6 +1,6 @@
 # Fichiers
 # Pour générer automatiquement les graphs
-Avec WSl: 
+Avec WSL: 
 `./make_graphs.sh`
 va tout faire.
 
