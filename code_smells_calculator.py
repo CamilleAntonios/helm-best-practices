@@ -51,6 +51,9 @@ def get_yaml_files(chart_path):
 def computeLinesOfChart(chart_path):
     total_lines = 0
 
+    print("path for lines computation:", chart_path)
+    print("from :" + os.getcwd())
+
     for root, dirs, files in os.walk(chart_path):
         for file in files:
             if file.endswith((".yaml", ".yml", ".tpl")):  # Only Useful Files
@@ -63,6 +66,27 @@ def computeLinesOfChart(chart_path):
                     print(f"Erreur lors de la lecture du fichier {file_path} : {e}")
 
     return total_lines
+
+def process_single_chart(chart, checks=None):
+    if checks is None:
+        print("Checks were not provided, loading them...")
+        checks = load_check_functions()
+    print(f"Chart : {chart}")
+    codeSmells = 0
+    lines = computeLinesOfChart(chart)    
+    yaml_files = get_yaml_files(chart)
+    files = len(yaml_files)
+
+    for check in checks:
+        result = check(yaml_files, chart)
+        status = "✔️ OK" if result["success"] else "❌ FAIL"
+        codeSmells += result["code_smells"]
+        print(f"  - {result['name']}: {status} ({result['details']})")
+    print("")
+    print("total code smells for chart", chart, ":", codeSmells)
+    print("")
+
+    return codeSmells, lines, files
 
 def main():
     print("Chargement des checks...")
@@ -77,20 +101,10 @@ def main():
     linesPerChart = {}
     filesPerChart = {}
     for chart in charts:
-        print(f"Chart : {chart}")
-        codeSmellsPerChart[chart] = 0
-        linesPerChart[chart] = computeLinesOfChart(chart)    
-        yaml_files = get_yaml_files(chart)
-        filesPerChart[chart] = len(yaml_files)
-
-        for check in checks:
-            result = check(yaml_files, chart)
-            status = "✔️ OK" if result["success"] else "❌ FAIL"
-            codeSmellsPerChart[chart] += result["code_smells"]
-            print(f"  - {result['name']}: {status} ({result['details']})")
-        print("")
-        print("total code smells for chart", chart, ":", codeSmellsPerChart[chart])
-        print("")
+        code_smells, total_lines, total_files = process_single_chart(chart, checks)
+        codeSmellsPerChart[chart] = code_smells
+        linesPerChart[chart] = total_lines
+        filesPerChart[chart] = total_files
         
     print("--- Résumé des code smells par chart ---")
     for chart, code_smells in codeSmellsPerChart.items():

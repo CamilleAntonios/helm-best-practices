@@ -1,0 +1,4 @@
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/base"
+tags_to_checkout = [["96a5e099d50992749097d599beb321466ecc97e8", "01 janvier 2026"], ["b8516275b540a844e68c64c266bf7e2c143be77f", "08 aout 2025"], ["ce58ff3abc333870f3ddc30c87373042a0d5de86", "04 janvier 2023"]]
