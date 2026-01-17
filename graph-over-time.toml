@@ -1,7 +1,3 @@
 [[repositories]]
-repository_folder = "repos_charts/istio"
-chart_folder_path = "manifests/charts/base"
-
-[[repositories]]
-repository_folder = "repos_charts/helm-charts"
+repository_folder = "/mnt/c/Users/hajar/Documents/Cours/SI5/charts/helm-charts-prometheus"
 chart_folder_path = "charts/alertmanager"

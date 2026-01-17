@@ -67,6 +67,27 @@ def computeLinesOfChart(chart_path):
 
     return total_lines
 
+def process_single_chart_detailed(chart, checks):
+    code_smells = 0
+    by_practice = {}
+
+    lines = computeLinesOfChart(chart)
+    yaml_files = get_yaml_files(chart)
+    files = len(yaml_files)
+
+    for check in checks:
+        result = check(yaml_files, chart)
+        count = result["code_smells"]
+        by_practice[result["name"]] = count
+        code_smells += count
+
+    return {
+        "total": code_smells,
+        "lines": lines,
+        "files": files,
+        "by_practice": by_practice
+    }
+
 def process_single_chart(chart, checks=None):
     if checks is None:
         print("Checks were not provided, loading them...")
@@ -88,6 +109,9 @@ def process_single_chart(chart, checks=None):
 
     return codeSmells, lines, files
 
+
+
+
 def main():
     print("Chargement des checks...")
     checks = load_check_functions()
@@ -98,14 +122,30 @@ def main():
 
     print("\n--- Résultats ---\n")
     codeSmellsPerChart = {}
+    codeSmellsByPractice = {}
+
     linesPerChart = {}
     filesPerChart = {}
     for chart in charts:
-        code_smells, total_lines, total_files = process_single_chart(chart, checks)
-        codeSmellsPerChart[chart] = code_smells
-        linesPerChart[chart] = total_lines
-        filesPerChart[chart] = total_files
-        
+        print(f"Chart : {chart}")
+        codeSmellsPerChart[chart] = 0
+        linesPerChart[chart] = computeLinesOfChart(chart)    
+        yaml_files = get_yaml_files(chart)
+        filesPerChart[chart] = len(yaml_files)
+        for check in checks:
+            result = check(yaml_files, chart)
+            status = "✔️ OK" if result["success"] else "❌ FAIL"
+            codeSmellsPerChart[chart] += result["code_smells"]
+            practice = result["name"]
+            if chart not in codeSmellsByPractice:
+                codeSmellsByPractice[chart] = {}
+
+            codeSmellsByPractice[chart][practice] = result["code_smells"]
+            print(f"  - {result['name']}: {status} ({result['details']})")
+        print("")
+        print("total code smells for chart", chart, ":", codeSmellsPerChart[chart])
+        print("")
+
     print("--- Résumé des code smells par chart ---")
     for chart, code_smells in codeSmellsPerChart.items():
         print(f"Chart: {chart} → Code Smells: {code_smells}, Total Lines: {linesPerChart[chart]}, Total Files: {filesPerChart[chart]}, ratio: {code_smells/linesPerChart[chart] if linesPerChart[chart]>0 else 0:.2%}")
@@ -117,5 +157,30 @@ def main():
             ratio = code_smells / linesPerChart[chart] if linesPerChart[chart] > 0 else 0
             chart_name_without_charts_prefix = chart.split("/")[1] # remove the "charts/" prefix
             writer.writerow([chart_name_without_charts_prefix, code_smells, linesPerChart[chart], filesPerChart[chart], f"{ratio:.2%}"])
+
+    with open("code_smells_by_practice.csv", "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([
+            "Chart",
+            "Practice",
+            "Code Smells",
+            "Total Lines",
+            "Ratio"
+        ])
+
+        for chart, practices in codeSmellsByPractice.items():
+            total_lines = linesPerChart.get(chart, 0)
+            chart_name = chart.split("/")[1]
+
+            for practice, count in practices.items():
+                ratio = count / total_lines if total_lines > 0 else 0
+                writer.writerow([
+                    chart_name,
+                    practice,
+                    count,
+                    total_lines,
+                    f"{ratio:.2%}"
+                ])
+
 if __name__ == "__main__":
     main()
