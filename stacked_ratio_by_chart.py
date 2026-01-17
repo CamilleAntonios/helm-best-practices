@@ -43,7 +43,7 @@ for practice in pivot.columns:
 # -------------------------
 # Styling
 # -------------------------
-plt.ylabel("% de mauvaises pratiques par ligne")
+plt.ylabel("ratio de mauvaises pratiques par ligne")
 plt.xlabel("Charts Helm")
 plt.title("Répartition des mauvaises pratiques par chart (ratios empilés)")
 plt.xticks(rotation=90)
@@ -117,7 +117,7 @@ practice_presence_sorted = practice_presence.sort_values(ascending=False)
 
 print("📊 Classement des mauvaises pratiques par nombre de charts impactées :")
 for practice, count in practice_presence_sorted.items():
-    percentage = (count / nb_charts) * 100
+    percentage = (count / nb_charts)
     print(f"  - {practice:<30} → {count:>3} charts ({percentage:5.1f}%)")
 print("")
 
