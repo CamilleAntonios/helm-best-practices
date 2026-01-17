@@ -1,8 +1,10 @@
 import tomli
 import os
+import sys
 from pathlib import Path
 from code_smells_calculator import process_single_chart, load_check_functions
 import matplotlib.pyplot as plt
+from find_repo_tags import find_tags
 
 checks = load_check_functions()
 
@@ -12,24 +14,27 @@ def compute_smells_for_repo(repository_folder: str, chart_folder_path: str, tag_
         f"chart='{chart_folder_path}', "
         f"tag='{tag_to_checkout}'"
     )
-    # chdir to repository folder
-    repo_path = Path(repository_folder)
-    chart_path = repo_path / chart_folder_path
-    if not chart_path.exists():
-        print(f"Chart path '{chart_path}' does not exist. Skipping.")
-        return
-    
+    print("Current directory: ", Path.cwd())
     current_dir = Path.cwd()
 
+
+    # chdir to repository folder
+    repo_path = Path(repository_folder)
     # chdir
     os.chdir(repo_path)
     # checkout tag
     os.system(f"git checkout {tag_to_checkout[0]}")
-
     os.chdir(current_dir)
 
+    chart_path = repo_path / chart_folder_path
+    if not chart_path.exists():
+        print(f"Chart path '{chart_path}' does not exist, from {Path.cwd()}. Skipping.")
+        return
+    
     # process charts
     codeSmells, lines, files = process_single_chart(str(chart_path), checks)
+
+    os.chdir(current_dir)
 
     print(
         f"Results for repo='{repository_folder}', "
@@ -54,13 +59,23 @@ def main(toml_path: Path):
     for repo in repositories:
         repository_folder = repo["repository_folder"]
         chart_folder_path = repo["chart_folder_path"]
-        tags_to_checkout = repo.get("tags_to_checkout", [])
+
+        tags_to_checkout = find_tags(6, repository_folder)
+
+        print("tags to checkout: ", tags_to_checkout)
 
         # store results per tag
         results_per_tag = {}
 
         for tag in tags_to_checkout:
-            codeSmells, lines, files = compute_smells_for_repo(repository_folder, chart_folder_path, tag)
+            smells_result = compute_smells_for_repo(repository_folder, chart_folder_path, tag)
+
+            if not smells_result:
+                continue
+            codeSmells, lines, files = smells_result
+
+            print("Returning to directory: ", current_dir)
+
             os.chdir(current_dir) # go back to original dir after processing each repo/tag
 
             results_per_tag[tag[0]] = {
@@ -81,6 +96,11 @@ def main(toml_path: Path):
         # plot
         # horizontal axis: tags
         # vertical axis : code smells per lines
+
+        # in tags_to_checkout, keep only those tags present in results_per_tag
+        tags_to_checkout = [
+            tag for tag in tags_to_checkout if tag[0] in results_per_tag.keys()
+        ]
 
         code_smells_per_k_lines = [
             (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["lines"] * 1000)
