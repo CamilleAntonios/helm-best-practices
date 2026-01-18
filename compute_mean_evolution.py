@@ -126,9 +126,9 @@ def main(toml_path: Path):
 
     plt.figure(figsize=(10, 6))
     plt.plot(global_smells_results.keys(), global_smells_results.values(), marker='o')
-    plt.title(f"Code Smells per 1000 Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.title(f"Code Smells per line over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
     plt.xlabel("Git Tags")
-    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.ylabel("Ratio of evolution between first and last tag")
     plt.xticks(rotation=45)
     plt.autoscale("y")
     plt.grid(True)
@@ -140,7 +140,7 @@ def main(toml_path: Path):
     plt.plot(global_lines_results.keys(), global_lines_results.values(), marker='o')
     plt.title(f"Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
     plt.xlabel("Git Tags")
-    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.ylabel("Ratio of evolution between first and last tag")
     plt.xticks(rotation=45)
     plt.autoscale("y")
     plt.grid(True)
@@ -152,13 +152,20 @@ def main(toml_path: Path):
     plt.plot(global_ratio_results.keys(), global_ratio_results.values(), marker='o')
     plt.title(f"Code Smells per Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
     plt.xlabel("Git Tags")
-    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.ylabel("Ratio of evolution between first and last tag")
     plt.xticks(rotation=45)
     plt.autoscale("y")
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(f"code_smells_per_lines_over_time.png")
     plt.close()
+
+    # write this data in a CSV
+    with open("global_results.csv", "w") as f:
+        f.write("repository_chart,code_smells_evolution,lines_evolution,code_smells_per_lines_evolution\n")
+        for key in global_smells_results.keys():
+            f.write(f"{key},{global_smells_results[key]},{global_lines_results[key]},{global_ratio_results[key]}\n")
+    
 
 if __name__ == "__main__":
     main(Path("graph-over-time.toml"))

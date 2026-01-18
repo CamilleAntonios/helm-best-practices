@@ -14,13 +14,6 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # -------------------------
 df = pd.read_csv("final_report.csv")
 
-# Clean ratio column (e.g. "0.71%")
-df["ratio"] = (
-    df["ratio"]
-    .str.replace("%", "", regex=False)
-    .astype(float)
-)
-
 # Clean days_ago (handle quoted values with comma decimal)
 def parse_days_ago(x):
     if isinstance(x, str):
@@ -30,7 +23,7 @@ def parse_days_ago(x):
 df["days_ago"] = df["days_ago"].apply(parse_days_ago)
 
 # Recompute ratio if needed (safety)
-df["ratio"] = df["code_smells"] / df["total_lines"] * 100
+df["ratio"] = df["code_smells"] / df["total_lines"]
 
 # -------------------------
 # Helper function
@@ -56,7 +49,7 @@ plot_scatter(
     label="origin",
     filename="bad_practices_vs_stars_origin.png",
     xlabel="Nombre d'étoiles Artifactory",
-    ylabel="% de mauvaises pratiques par ligne"
+    ylabel="Nombre de mauvaises pratiques par ligne"
 )
 
 # -------------------------
@@ -76,7 +69,7 @@ for (origin, group_name), group in df.groupby(["origin", "stars_group"]):
     plt.scatter(group["stars"], group["ratio"], label=label, alpha=0.6)
 
 plt.xlabel("Nombre d'étoiles Artifactory")
-plt.ylabel("% de mauvaises pratiques par ligne")
+plt.ylabel("Nombre de mauvaises pratiques par ligne")
 plt.legend()
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_stars_median_split.png"))
@@ -92,7 +85,7 @@ plot_scatter(
     label="origin",
     filename="bad_practices_vs_total_lines.png",
     xlabel="Nombre total de lignes de configuration",
-    ylabel="% de mauvaises pratiques par ligne"
+    ylabel="Nombre de mauvaises pratiques par ligne"
 )
 
 # -------------------------
@@ -101,7 +94,7 @@ plot_scatter(
 plt.figure()
 plt.scatter(df["days_ago"], df["ratio"], alpha=0.6)
 plt.xlabel("Derniere release (days ago)")
-plt.ylabel("% de mauvaises pratiques par ligne")
+plt.ylabel("Nombre de mauvaises pratiques par ligne")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_days_ago.png"))
 plt.close()
@@ -119,7 +112,7 @@ quartile_means = df.groupby("days_quartile")["ratio"].mean()
 
 plt.figure()
 quartile_means.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par ligne")
+plt.ylabel("Nombre moyen de mauvaises pratiques par ligne")
 plt.xlabel("Quartiles de Days Ago")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_by_days_ago_quartiles.png"))
@@ -132,7 +125,7 @@ mean_ratios = df.groupby("origin")["ratio"].mean()
 
 plt.figure()
 mean_ratios.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par ligne")
+plt.ylabel("Nombre moyen de mauvaises pratiques par ligne")
 plt.xlabel("Origine du chart")
 plt.title(
     "ATTENTION : ce chiffre seul n'est PAS représentatif\n"

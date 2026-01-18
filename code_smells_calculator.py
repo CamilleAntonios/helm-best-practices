@@ -108,7 +108,7 @@ def main():
         
     print("--- Résumé des code smells par chart ---")
     for chart, code_smells in codeSmellsPerChart.items():
-        print(f"Chart: {chart} → Code Smells: {code_smells}, Total Lines: {linesPerChart[chart]}, Total Files: {filesPerChart[chart]}, ratio: {code_smells/linesPerChart[chart] if linesPerChart[chart]>0 else 0:.2%}")
+        print(f"Chart: {chart} → Code Smells: {code_smells}, Total Lines: {linesPerChart[chart]}, Total Files: {filesPerChart[chart]}, ratio: {code_smells/linesPerChart[chart] if linesPerChart[chart]>0 else 0}")
 
     with open("code_smells_report.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
@@ -116,6 +116,6 @@ def main():
         for chart, code_smells in codeSmellsPerChart.items():
             ratio = code_smells / linesPerChart[chart] if linesPerChart[chart] > 0 else 0
             chart_name_without_charts_prefix = chart.split("/")[1] # remove the "charts/" prefix
-            writer.writerow([chart_name_without_charts_prefix, code_smells, linesPerChart[chart], filesPerChart[chart], f"{ratio:.2%}"])
+            writer.writerow([chart_name_without_charts_prefix, code_smells, linesPerChart[chart], filesPerChart[chart], ratio])
 if __name__ == "__main__":
     main()

@@ -104,16 +104,16 @@ def main(toml_path: Path):
         ]
 
         code_smells_per_k_lines = [
-            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["lines"] * 1000)
+            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["lines"])
             if results_per_tag[tag[0]]["lines"] > 0 else 0
             for tag in tags_to_checkout
         ]
 
         plt.figure(figsize=(10, 6))
         plt.plot([tag[1] for tag in tags_to_checkout], code_smells_per_k_lines, marker='o')
-        plt.title(f"Code Smells per 1000 Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+        plt.title(f"Code Smells per line over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
         plt.xlabel("Git Tags")
-        plt.ylabel("Code Smells per 1000 Lines")
+        plt.ylabel("Code Smells per line")
         plt.xticks(rotation=45)
         plt.autoscale("y")
         plt.grid(True)
@@ -126,16 +126,16 @@ def main(toml_path: Path):
         # horizontal axis: tags
         # vertical axis : code smells per files
 
-        code_smells_per_100_files = [
-            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["files"] * 100)
+        code_smells_per_files = [
+            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["files"])
             if results_per_tag[tag[0]]["files"] > 0 else 0
             for tag in tags_to_checkout
         ]
         plt.figure(figsize=(10, 6))
-        plt.plot([tag[1] for tag in tags_to_checkout], code_smells_per_100_files, marker='o', color='orange')
-        plt.title(f"Code Smells per 100 Files over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+        plt.plot([tag[1] for tag in tags_to_checkout], code_smells_per_files, marker='o', color='orange')
+        plt.title(f"Code Smells per file over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
         plt.xlabel("Git Tags")
-        plt.ylabel("Code Smells per 100 Files")
+        plt.ylabel("Code Smells per file")
         plt.xticks(rotation=45)
         plt.autoscale("y")
         plt.grid(True)
