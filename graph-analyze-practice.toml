@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/cert-manager/cert-manager.git"
-chart_folder_path = "deploy/charts/cert-manager"
+repo_url = "https://github.com/open-feature/open-feature-operator.git"
+chart_folder_path = "chart/open-feature-operator"
 months_range = 1

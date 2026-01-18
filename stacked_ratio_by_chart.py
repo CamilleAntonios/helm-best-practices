@@ -14,7 +14,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 df = pd.read_csv("code_smells_by_practice.csv")
 
 # Convert ratio "x.xx%" -> float
-df["Ratio"] = df["Ratio"].str.replace("%", "", regex=False).astype(float)
+df["Ratio"] = df["Ratio"].astype(float)
 
 # -------------------------
 # Pivot: Chart x Practice
@@ -70,7 +70,7 @@ total_ratio_per_chart = pivot.sum(axis=1)
 
 print("📉 Charts avec le moins de mauvaises pratiques (Top 10) :")
 for chart, ratio in total_ratio_per_chart.sort_values().head(10).items():
-    print(f"  - {chart:<35} → {ratio:.2f}%")
+    print(f"  - {chart:<35} → {ratio:.5f}")
 print("")
 
 # ------------------------------------------------------------
@@ -78,7 +78,7 @@ print("")
 # ------------------------------------------------------------
 print("📈 Charts avec le plus de mauvaises pratiques (Top 10) :")
 for chart, ratio in total_ratio_per_chart.sort_values(ascending=False).head(10).items():
-    print(f"  - {chart:<35} → {ratio:.2f}%")
+    print(f"  - {chart:<35} → {ratio:.2f}")
 print("")
 
 # ------------------------------------------------------------
@@ -161,11 +161,11 @@ print("")
 total_contribution = pivot.sum(axis=0)
 total_all = total_contribution.sum()
 
-pareto = total_contribution.sort_values(ascending=False).cumsum() / total_all * 100
+pareto = total_contribution.sort_values(ascending=False).cumsum() / total_all 
 
 print("📐 Analyse de Pareto (contribution cumulée des pratiques) :")
 for practice, cum_pct in pareto.items():
-    print(f"  - {practice:<30} → {cum_pct:5.1f}% cumulé")
+    print(f"  - {practice:<30} → {cum_pct:.3f} cumul")
 print("")
 
 # ------------------------------------------------------------
