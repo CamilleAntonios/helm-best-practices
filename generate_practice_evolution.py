@@ -119,19 +119,21 @@ def main(toml_path: Path):
     with toml_path.open("rb") as f:
         config = tomli.load(f)
 
-    for repo in config["repositories"]:
-        repo_path = REPO_BASE
-        chart_path = repo["chart_folder_path"]
+    repo_cfg = config["repository"]
 
-        results = analyze_repo(repo_path, chart_path)
-        dates, series = build_time_series(results)
+    repo_path = REPO_BASE
+    chart_path = repo_cfg["chart_folder_path"]
+    months_range = repo_cfg["months_range"]
 
-        repo_name = Path(repo_path).name
-        chart_name = Path(chart_path).name
+    results = analyze_repo(repo_path, chart_path, months_range)
+    dates, series = build_time_series(results)
 
-        plot_per_practice(dates, series, repo_name, chart_name)
-        plot_stacked(dates, series, repo_name, chart_name)
-        print_stats(dates, series)
+    repo_name = repo_path.name
+    chart_name = Path(chart_path).name
+
+    plot_per_practice(dates, series, repo_name, chart_name)
+    plot_stacked(dates, series, repo_name, chart_name)
+    print_stats(dates, series)
 
 
 if __name__ == "__main__":
