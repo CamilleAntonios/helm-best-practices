@@ -118,7 +118,7 @@ practice_presence_sorted = practice_presence.sort_values(ascending=False)
 print("📊 Classement des mauvaises pratiques par nombre de charts impactées :")
 for practice, count in practice_presence_sorted.items():
     percentage = (count / nb_charts)
-    print(f"  - {practice:<30} → {count:>3} charts ({percentage:5.1f}%)")
+    print(f"  - {practice:<30} → {count:>3} charts ({percentage:5.1f})")
 print("")
 
 # ------------------------------------------------------------
@@ -152,7 +152,7 @@ mean_when_present = pivot.where(pivot > 0).mean(axis=0)
 print("📈 Intensité moyenne des pratiques (uniquement quand détectées) :")
 for practice, value in mean_when_present.sort_values(ascending=False).items():
     if pd.notna(value):
-        print(f"  - {practice:<30} → {value:.2f}%")
+        print(f"  - {practice:<30} → {value:.2f}")
 print("")
 
 # ------------------------------------------------------------
@@ -165,7 +165,7 @@ pareto = total_contribution.sort_values(ascending=False).cumsum() / total_all
 
 print("📐 Analyse de Pareto (contribution cumulée des pratiques) :")
 for practice, cum_pct in pareto.items():
-    print(f"  - {practice:<30} → {cum_pct:.3f} cumul")
+    print(f"  - {practice:<30} → {cum_pct:.3f}")
 print("")
 
 # ------------------------------------------------------------
