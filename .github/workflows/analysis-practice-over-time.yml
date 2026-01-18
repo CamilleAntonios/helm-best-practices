@@ -29,6 +29,7 @@ jobs:
         run: |
           rm -rf target-repo
           mkdir target-repo
+          rm graphs_practices_over_time/*
 
       # 5️⃣ Clone Helm repository
       - name: Clone Helm repository
