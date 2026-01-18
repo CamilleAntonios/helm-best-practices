@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/opencost/opencost-helm-chart.git"
-chart_folder_path = "charts/opencost"
+repo_url = "git@github.com:cert-manager/cert-manager.git"
+chart_folder_path = "deploy/charts/cert-manager"
 months_range = 1
