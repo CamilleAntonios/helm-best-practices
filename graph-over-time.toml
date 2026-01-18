@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/argoproj/argo-helm.git"
-chart_folder_path = "charts/argo-rollouts"
+repo_url = "https://github.com/prometheus-community/helm-charts.git"
+chart_folder_path = "charts/prometheus-pushgateway"
 months_range = 1
