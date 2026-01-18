@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 from code_smells_calculator import process_single_chart_detailed, load_check_functions
-from compute_graphs_ratio_per_file import OUTPUT_DIR
 from find_repo_tags import find_tags
 
 
