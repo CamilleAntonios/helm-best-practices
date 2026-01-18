@@ -38,7 +38,7 @@ jobs:
         run: |
           REPO_URL=$(python - <<EOF
           import tomli
-          with open("graph-over-time.toml", "rb") as f:
+          with open("graph-analyze-practice.toml", "rb") as f:
               print(tomli.load(f)["repository"]["repo_url"])
           EOF
           )
