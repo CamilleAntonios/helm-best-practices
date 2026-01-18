@@ -98,26 +98,36 @@ def plot_stacked(dates, series, output_dir, repo_name, chart_name):
     plt.close()
 
 
-def print_stats(dates, series):
-    print("\n=== ANALYSE DES PRATIQUES ===\n")
+def save_practice_stats(dates, series, output_dir):
+    output_file = output_dir / "ANALYSE_PRACTICES.txt"
 
-    for practice, values in series.items():
-        introduced = None
-        for i in range(1, len(values)):
-            if values[i - 1] == 0 and values[i] > 0:
-                introduced = (dates[i - 1], dates[i])
-                break
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write("=== ANALYSE DES PRATIQUES ===\n\n")
 
-        trend = values[-1] - values[0]
+        for practice, values in series.items():
+            introduced = None
+            for i in range(1, len(values)):
+                if values[i - 1] == 0 and values[i] > 0:
+                    introduced = (dates[i - 1], dates[i])
+                    break
 
-        print(f"- {practice}")
-        print(f"  • début: {values[0]:.2f}")
-        print(f"  • fin  : {values[-1]:.2f}")
-        print(f"  • tendance: {'↗' if trend > 0 else '↘' if trend < 0 else '='}")
+            trend_value = values[-1] - values[0]
+            if trend_value > 0:
+                trend = "↗"
+            elif trend_value < 0:
+                trend = "↘"
+            else:
+                trend = "="
 
-        if introduced:
-            print(f"  ⚠️ introduite entre {introduced[0]} → {introduced[1]}")
-        print("")
+            f.write(f"- {practice}\n")
+            f.write(f"  • début: {values[0]:.2f}\n")
+            f.write(f"  • fin  : {values[-1]:.2f}\n")
+            f.write(f"  • tendance: {trend}\n")
+
+            if introduced:
+                f.write(f"  ⚠️ introduite entre {introduced[0]} → {introduced[1]}\n")
+
+            f.write("\n")
 
 
 def main(toml_path: Path):
@@ -140,7 +150,7 @@ def main(toml_path: Path):
 
     plot_per_practice(dates, series, output_dir, repo_name, chart_name)
     plot_stacked(dates, series, output_dir, repo_name, chart_name)
-    print_stats(dates, series)
+    save_practice_stats(dates, series, output_dir)
 
 
 if __name__ == "__main__":
