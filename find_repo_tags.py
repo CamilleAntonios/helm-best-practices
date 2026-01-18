@@ -19,9 +19,9 @@ def find_tags(months_range: int, repo_path: str):
 
     for line in log:
         sha, date_str = line.split(maxsplit=1)
-        commit_date = datetime.fromisoformat(date_str)
+        commit_date = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S %z")
 
-        if last_date is None or commit_date >= last_date + relativedelta(months=6):
+        if last_date is None or commit_date >= last_date + relativedelta(months=months_range):
             selected.append((sha, commit_date.date()))
             last_date = commit_date
 

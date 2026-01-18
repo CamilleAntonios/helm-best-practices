@@ -1,7 +1,135 @@
 [[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/kube-prometheus-stack"
+
+[[repositories]]
+repository_folder = "repos_charts/cert-manager"
+chart_folder_path = "deploy/charts/cert-manager"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-cd"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus"
+
+[[repositories]]
+repository_folder = "repos_charts/harbor-helm"
+chart_folder_path = "./"
+
+[[repositories]]
+repository_folder = "repos_charts/cilium"
+chart_folder_path = "install/kubernetes/cilium"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-workflows"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-control/istio-discovery"
+
+[[repositories]]
+repository_folder = "repos_charts/kyverno"
+chart_folder_path = "charts/kyverno"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argocd-apps"
+
+[[repositories]]
+repository_folder = "repos_charts/hub"
+chart_folder_path = "charts/artifact-hub"
+
+[[repositories]]
 repository_folder = "repos_charts/istio"
 chart_folder_path = "manifests/charts/base"
 
 [[repositories]]
-repository_folder = "repos_charts/helm-charts"
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-rollouts"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-blackbox-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-blackbox-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/jaeger"
+chart_folder_path = "charts/jaeger"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/gateway"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argocd-image-updater"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
 chart_folder_path = "charts/alertmanager"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-node-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-events"
+
+[[repositories]]
+repository_folder = "repos_charts/rook"
+chart_folder_path = "deploy/charts/rook-ceph"
+
+[[repositories]]
+repository_folder = "repos_charts/kured"
+chart_folder_path = "charts/kured"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-adapter"
+
+[[repositories]]
+repository_folder = "repos_charts/headlamp"
+chart_folder_path = "charts/headlamp"
+
+[[repositories]]
+repository_folder = "repos_charts/openebs"
+chart_folder_path = "charts"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-operator-crds"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-pushgateway"
+
+[[repositories]]
+repository_folder = "repos_charts/rook"
+chart_folder_path = "deploy/charts/rook-ceph-cluster"
+
+[[repositories]]
+repository_folder = "repos_charts/policy-reporter"
+chart_folder_path = "charts/policy-reporter"
+
+[[repositories]]
+repository_folder = "repos_charts/kyverno"
+chart_folder_path = "charts/kyverno-policies"
+
+[[repositories]]
+repository_folder = "repos_charts/opencost-helm-chart"
+chart_folder_path = "charts/opencost"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-cni"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-cni"

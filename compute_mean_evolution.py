@@ -56,6 +56,11 @@ def main(toml_path: Path):
 
     current_dir = Path.cwd()
 
+    global_smells_results = {}
+    global_lines_results = {}
+
+    global_ratio_results = {}
+
     for repo in repositories:
         repository_folder = repo["repository_folder"]
         chart_folder_path = repo["chart_folder_path"]
@@ -103,48 +108,57 @@ def main(toml_path: Path):
             tag for tag in tags_to_checkout if tag[0] in results_per_tag.keys()
         ]
 
-        code_smells_per_k_lines = [
-            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["lines"] * 1000)
-            if results_per_tag[tag[0]]["lines"] > 0 else 0
-            for tag in tags_to_checkout
-        ]
+        if len(tags_to_checkout) < 2:
+            print(f"Not enough tags with results for repository '{repository_folder}', chart '{chart_folder_path}'. Skipping plot.")
+            continue
 
-        plt.figure(figsize=(10, 6))
-        plt.plot([tag[1] for tag in tags_to_checkout], code_smells_per_k_lines, marker='o')
-        plt.title(f"Code Smells per 1000 Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
-        plt.xlabel("Git Tags")
-        plt.ylabel("Code Smells per 1000 Lines")
-        plt.xticks(rotation=45)
-        plt.autoscale("y")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.savefig(f"{repository_folder.replace('/', '_')}_{chart_folder_path.replace('/', '_')}_code_smells_over_time.png")
-        plt.close()
-        print(f"Plot saved as '{repository_folder.replace('/', '_')}_{chart_folder_path.replace('/', '_')}_code_smells_over_time.png'")
+        first_smell_result = results_per_tag[tags_to_checkout[0][0]]["code_smells"]
+        last_smell_result = results_per_tag[tags_to_checkout[-1][0]]["code_smells"]
+        global_smells_results[str(repository_folder) + str(chart_folder_path)] = (last_smell_result - first_smell_result) / first_smell_result
 
-        # plot
-        # horizontal axis: tags
-        # vertical axis : code smells per files
+        first_lines_result = results_per_tag[tags_to_checkout[0][0]]["lines"]
+        last_lines_result = results_per_tag[tags_to_checkout[-1][0]]["lines"]
+        global_lines_results[str(repository_folder) + str(chart_folder_path)] = (last_lines_result - first_lines_result) / first_lines_result
 
-        code_smells_per_100_files = [
-            (results_per_tag[tag[0]]["code_smells"] / results_per_tag[tag[0]]["files"] * 100)
-            if results_per_tag[tag[0]]["files"] > 0 else 0
-            for tag in tags_to_checkout
-        ]
-        plt.figure(figsize=(10, 6))
-        plt.plot([tag[1] for tag in tags_to_checkout], code_smells_per_100_files, marker='o', color='orange')
-        plt.title(f"Code Smells per 100 Files over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
-        plt.xlabel("Git Tags")
-        plt.ylabel("Code Smells per 100 Files")
-        plt.xticks(rotation=45)
-        plt.autoscale("y")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.savefig(f"{repository_folder.replace('/', '_')}_{chart_folder_path.replace('/', '_')}_code_smells_per_files_over_time.png")
-        plt.close()
-        print(f"Plot saved as '{repository_folder.replace('/', '_')}_{chart_folder_path.replace('/', '_')}_code_smells_per_files_over_time.png'")
+        first_ratio_result = first_smell_result / first_lines_result if first_lines_result > 0 else 0
+        last_ratio_result = last_smell_result / last_lines_result if last_lines_result > 0 else 0
+        global_ratio_results[str(repository_folder) + str(chart_folder_path)] = (last_ratio_result - first_ratio_result) / first_ratio_result if first_ratio_result > 0 else 0
 
+    plt.figure(figsize=(10, 6))
+    plt.plot(global_smells_results.keys(), global_smells_results.values(), marker='o')
+    plt.title(f"Code Smells per 1000 Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.xlabel("Git Tags")
+    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.xticks(rotation=45)
+    plt.autoscale("y")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(f"code_smells_over_time.png")
+    plt.close()
 
+    plt.figure(figsize=(10, 6))
+    plt.plot(global_lines_results.keys(), global_lines_results.values(), marker='o')
+    plt.title(f"Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.xlabel("Git Tags")
+    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.xticks(rotation=45)
+    plt.autoscale("y")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(f"lines_over_time.png")
+    plt.close()
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(global_ratio_results.keys(), global_ratio_results.values(), marker='o')
+    plt.title(f"Code Smells per Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.xlabel("Git Tags")
+    plt.ylabel("Percentage of evolution between first and last tag")
+    plt.xticks(rotation=45)
+    plt.autoscale("y")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(f"code_smells_per_lines_over_time.png")
+    plt.close()
 
 if __name__ == "__main__":
     main(Path("graph-over-time.toml"))
