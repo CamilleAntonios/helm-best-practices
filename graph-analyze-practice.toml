@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/prometheus-community/helm-charts.git"
-chart_folder_path = "charts/prometheus-pushgateway"
+repo_url = "https://github.com/istio/istio.git"
+chart_folder_path = "manifests/sample-charts/ambient"
 months_range = 1
