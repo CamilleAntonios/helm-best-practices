@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/open-feature/open-feature-operator.git"
-chart_folder_path = "chart/open-feature-operator"
+repo_url = "https://github.com/Kuadrant/kuadrant-operator.git"
+chart_folder_path = "charts/kuadrant-operator"
 months_range = 1
