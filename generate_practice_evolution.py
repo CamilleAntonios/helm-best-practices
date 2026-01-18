@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 from code_smells_calculator import process_single_chart_detailed, load_check_functions
-from find_repo_tags import find_tags
+from find_repo_tags_for_practice import find_tags
 
 
 REPO_BASE = Path("target-repo").resolve()
@@ -58,7 +58,7 @@ def build_time_series(results):
 
         for p in all_practices:
             count = r["by_practice"].get(p, 0)
-            ratio = (count / lines * 1000) if lines > 0 else 0
+            ratio = (count / lines) if lines > 0 else 0
             series[p].append(ratio)
 
     return dates, series
@@ -70,7 +70,7 @@ def plot_per_practice(dates, series, output_dir, repo_name, chart_name):
         plt.plot(dates, values, marker="o")
         plt.title(f"{practice}\n{repo_name} / {chart_name}")
         plt.xlabel("Date")
-        plt.ylabel("Code smells / 1000 lignes")
+        plt.ylabel("Nombre de mauvaises pratiques par ligne")
         plt.xticks(rotation=45)
         plt.grid(True)
         plt.tight_layout()
@@ -88,7 +88,7 @@ def plot_stacked(dates, series, output_dir, repo_name, chart_name):
     plt.stackplot(dates, values, labels=labels)
     plt.title(f"Évolution des mauvaises pratiques\n{repo_name} / {chart_name}")
     plt.xlabel("Date")
-    plt.ylabel("Code smells / 1000 lignes")
+    plt.ylabel("Nombre de mauvaises pratiques par ligne")
     plt.legend(loc="upper left", bbox_to_anchor=(1.02, 1))
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -154,4 +154,4 @@ def main(toml_path: Path):
 
 
 if __name__ == "__main__":
-    main(Path("graph-over-time.toml"))
+    main(Path("graph-analyze-practice.toml"))

@@ -14,14 +14,6 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # -------------------------
 df = pd.read_csv("final_report.csv")
 
-# Clean ratio column (if it exists as a percentage string, optional)
-if "ratio" in df.columns:
-    df["ratio"] = (
-        df["ratio"]
-        .str.replace("%", "", regex=False)
-        .astype(float)
-    )
-
 # Clean days_ago (handle quoted values with comma decimal)
 def parse_days_ago(x):
     if isinstance(x, str):
@@ -33,13 +25,13 @@ df["days_ago"] = df["days_ago"].apply(parse_days_ago)
 # -------------------------
 # Recompute ratio based on files
 # -------------------------
-df["ratio"] = df["code_smells"] / df["total_files"] * 100
+df["ratio"] = df["code_smells"] / df["total_files"]
 
 # -------------------------
 # Helper function
 # -------------------------
 def plot_scatter(x, y, data, label, filename, xlabel, ylabel):
-    plt.figure()
+    plt.figure(figsize=(10, 6))  # width, height in inches
     for name, group in data:
         plt.scatter(group[x], group[y], label=name, alpha=0.6)
     plt.xlabel(xlabel)
@@ -55,11 +47,16 @@ def plot_scatter(x, y, data, label, filename, xlabel, ylabel):
 plot_scatter(
     x="stars",
     y="ratio",
-    data=df.groupby("origin"),
+    data=df.assign(
+    origin=df["origin"].replace({
+        "commu": "Créé par la communauté",
+        "entreprise": "Créé par une entreprise"
+    })
+    ).groupby("origin"),
     label="origin",
     filename="bad_practices_vs_stars_origin.png",
     xlabel="Nombre d'étoiles Artifactory",
-    ylabel="% de mauvaises pratiques par fichier"
+    ylabel="Nombre de mauvaises pratiques par fichier"
 )
 
 # -------------------------
@@ -69,17 +66,17 @@ median_stars = df["stars"].median()
 
 df["stars_group"] = np.where(
     df["stars"] <= median_stars,
-    "Sous médiane",
-    "Au-dessus médiane"
+    "En-dessous de la médiane du nombre d'étoiles",
+    "Au-dessus de la médiane du nombre d'étoiles"
 )
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 for (origin, group_name), group in df.groupby(["origin", "stars_group"]):
     label = f"{origin} - {group_name}"
     plt.scatter(group["stars"], group["ratio"], label=label, alpha=0.6)
 
 plt.xlabel("Nombre d'étoiles Artifactory")
-plt.ylabel("% de mauvaises pratiques par fichier")
+plt.ylabel("Nombre de mauvaises pratiques par fichier")
 plt.legend()
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_stars_median_split.png"))
@@ -91,20 +88,25 @@ plt.close()
 plot_scatter(
     x="total_files",
     y="ratio",
-    data=df.groupby("origin"),
+    data=df.assign(
+    origin=df["origin"].replace({
+        "commu": "Créé par la communauté",
+        "entreprise": "Créé par une entreprise"
+    })
+    ).groupby("origin"),
     label="origin",
     filename="bad_practices_vs_total_files.png",
     xlabel="Nombre total de fichiers de configuration",
-    ylabel="% de mauvaises pratiques par fichier"
+    ylabel="Nombre de mauvaises pratiques par fichier"
 )
 
 # -------------------------
 # 4. Bad practices vs days ago
 # -------------------------
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 plt.scatter(df["days_ago"], df["ratio"], alpha=0.6)
 plt.xlabel("Derniere release (days ago)")
-plt.ylabel("% de mauvaises pratiques par fichier")
+plt.ylabel("Nombre de mauvaises pratiques par fichier")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_days_ago.png"))
 plt.close()
@@ -112,18 +114,32 @@ plt.close()
 # -------------------------
 # 5. Quartiles of days_ago (bar chart)
 # -------------------------
+
+quartiles, bins = pd.qcut(
+    df["days_ago"],
+    q=4,
+    retbins=True,
+    duplicates="drop"
+)
+
+labels = [
+    f"Q{i+1} ({int(bins[i])} → {int(bins[i+1])} jours)"
+    for i in range(len(bins) - 1)
+]
+
 df["days_quartile"] = pd.qcut(
     df["days_ago"],
     q=4,
-    labels=["Q1 (plus récent)", "Q2", "Q3", "Q4 (plus ancien)"]
+    labels=labels,
+    duplicates="drop"
 )
 
 quartile_means = df.groupby("days_quartile")["ratio"].mean()
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 quartile_means.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par fichier")
-plt.xlabel("Quartiles de Days Ago")
+plt.ylabel("Nombre moyen de mauvaises pratiques par fichier")
+plt.xlabel("Quartiles de jours depuis la dernière release")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_by_days_ago_quartiles.png"))
 plt.close()
@@ -133,13 +149,12 @@ plt.close()
 # -------------------------
 mean_ratios = df.groupby("origin")["ratio"].mean()
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 mean_ratios.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par fichier")
+plt.ylabel("Nombre moyen de mauvaises pratiques par fichier")
 plt.xlabel("Origine du chart")
 plt.title(
-    "ATTENTION : ce chiffre seul n'est PAS représentatif\n"
-    "(il exclut les étoiles, la taille et la fraîcheur du projet)"
+    "Nombre moyen de mauvaises pratiques par fichier : Communauté vs Entreprise"
 )
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "mean_bad_practices_commu_vs_entreprise.png"))

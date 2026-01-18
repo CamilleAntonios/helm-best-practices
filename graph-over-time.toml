@@ -1,4 +1,255 @@
-[repository]
-repo_url = "https://github.com/prometheus-community/helm-charts.git"
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/kube-prometheus-stack"
+
+[[repositories]]
+repository_folder = "repos_charts/cert-manager"
+chart_folder_path = "deploy/charts/cert-manager"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-cd"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus"
+
+[[repositories]]
+repository_folder = "repos_charts/harbor-helm"
+chart_folder_path = "./"
+
+[[repositories]]
+repository_folder = "repos_charts/cilium"
+chart_folder_path = "install/kubernetes/cilium"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-workflows"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-control/istio-discovery"
+
+[[repositories]]
+repository_folder = "repos_charts/kyverno"
+chart_folder_path = "charts/kyverno"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argocd-apps"
+
+[[repositories]]
+repository_folder = "repos_charts/hub"
+chart_folder_path = "charts/artifact-hub"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/base"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-rollouts"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-blackbox-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-blackbox-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/jaeger"
+chart_folder_path = "charts/jaeger"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/gateway"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argocd-image-updater"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/alertmanager"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-node-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/argo-helm"
+chart_folder_path = "charts/argo-events"
+
+[[repositories]]
+repository_folder = "repos_charts/rook"
+chart_folder_path = "deploy/charts/rook-ceph"
+
+[[repositories]]
+repository_folder = "repos_charts/kured"
+chart_folder_path = "charts/kured"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-adapter"
+
+[[repositories]]
+repository_folder = "repos_charts/headlamp"
+chart_folder_path = "charts/headlamp"
+
+[[repositories]]
+repository_folder = "repos_charts/openebs"
+chart_folder_path = "charts"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-operator-crds"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
 chart_folder_path = "charts/prometheus-pushgateway"
-months_range = 1
+
+[[repositories]]
+repository_folder = "repos_charts/rook"
+chart_folder_path = "deploy/charts/rook-ceph-cluster"
+
+[[repositories]]
+repository_folder = "repos_charts/policy-reporter"
+chart_folder_path = "charts/policy-reporter"
+
+[[repositories]]
+repository_folder = "repos_charts/kyverno"
+chart_folder_path = "charts/kyverno-policies"
+
+[[repositories]]
+repository_folder = "repos_charts/opencost-helm-chart"
+chart_folder_path = "charts/opencost"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-cni"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/istio-cni"
+
+[[repositories]]
+repository_folder = "repos_charts/meshery"
+chart_folder_path = "install/kubernetes/helm/meshery"
+
+[[repositories]]
+repository_folder = "repos_charts/openfga"
+chart_folder_path = "charts/openfga"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/charts/ztunnel"
+
+[[repositories]]
+repository_folder = "repos_charts/tetragon"
+chart_folder_path = "install/kubernetes/tetragon"
+
+[[repositories]]
+repository_folder = "repos_charts/inspektor-gadget"
+chart_folder_path = "charts/gadget"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-snmp-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/inspektor-gadget"
+chart_folder_path = "charts/gadget"
+
+[[repositories]]
+repository_folder = "repos_charts/open-feature-operator"
+chart_folder_path = "chart/open-feature-operator"
+
+[[repositories]]
+repository_folder = "repos_charts/telepresence"
+chart_folder_path = "charts/telepresence-oss"
+
+[[repositories]]
+repository_folder = "repos_charts/csi-driver"
+chart_folder_path = "deploy/charts/csi-driver"
+
+[[repositories]]
+repository_folder = "repos_charts/istio"
+chart_folder_path = "manifests/sample-charts/ambient"
+
+[[repositories]]
+repository_folder = "repos_charts/microcks"
+chart_folder_path = "install/kubernetes/microcks"
+
+[[repositories]]
+repository_folder = "repos_charts/istio-csr"
+chart_folder_path = "deploy/charts/istio-csr"
+
+[[repositories]]
+repository_folder = "repos_charts/lifecycle-toolkit"
+chart_folder_path = "chart"
+
+[[repositories]]
+repository_folder = "repos_charts/capsule"
+chart_folder_path = "charts/capsule"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-json-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/piraeus"
+chart_folder_path = "charts/linstor-cluster"
+
+[[repositories]]
+repository_folder = "repos_charts/perses"
+chart_folder_path = "charts/perses"
+
+[[repositories]]
+repository_folder = "repos_charts/google-cas-issuer"
+chart_folder_path = "deploy/charts/google-cas-issuer"
+
+[[repositories]]
+repository_folder = "repos_charts/kuadrant-operator"
+chart_folder_path = "charts/kuadrant-operator"
+
+[[repositories]]
+repository_folder = "repos_charts/piraeus"
+chart_folder_path = "charts/linstor-affinity-controller"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/alertmanager-snmp-notifier"
+
+[[repositories]]
+repository_folder = "repos_charts/authorino-operator"
+chart_folder_path = "charts/authorino-operator"
+
+[[repositories]]
+repository_folder = "repos_charts/capsule-proxy"
+chart_folder_path = "charts/capsule-proxy"
+
+[[repositories]]
+repository_folder = "repos_charts/csi-driver-spiffe"
+chart_folder_path = "deploy/charts/csi-driver-spiffe"
+
+[[repositories]]
+repository_folder = "repos_charts/dns-operator"
+chart_folder_path = "charts/dns-operator"
+
+[[repositories]]
+repository_folder = "repos_charts/lifecycle-toolkit"
+chart_folder_path = "keptn-cert-manager/chart"
+
+[[repositories]]
+repository_folder = "repos_charts/limitador-operator"
+chart_folder_path = "charts/limitador-operator"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prometheus-conntrack-stats-exporter"
+
+[[repositories]]
+repository_folder = "repos_charts/prometheus-charts"
+chart_folder_path = "charts/prom-label-proxy"
