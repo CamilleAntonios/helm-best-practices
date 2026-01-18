@@ -44,6 +44,11 @@ jobs:
           )
           git clone "$REPO_URL" target-repo
 
+      # global analysis script for latest info in the csv file
+      - name: Prepare analysis script
+        run: |
+          python calculate_code_smells.py 
+
       # 6️⃣ Run analysis
       - name: Run practice evolution analysis
         run: |

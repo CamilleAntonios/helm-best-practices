@@ -2,15 +2,6 @@ import os
 import re
 
 def check(yaml_files, chart):
-    """
-    Compatible avec main() :
-    main() envoie une liste de chemins YAML provenant d'une chart.
-
-    Ce check doit alors :
-    - retrouver le chemin racine de la chart
-    - analyser les fichiers dans <chart>/templates/
-    """
-
     if not yaml_files:
         return {
             "name": "include_indent_required",
@@ -19,17 +10,13 @@ def check(yaml_files, chart):
             "details": "Aucun fichier YAML fourni, check ignoré."
         }
 
-    # On déduit la chart à partir du premier fichier YAML
-    # Exemple : charts/mychart/values.yaml → charts/mychart
     chart_path = os.path.dirname(yaml_files[0])
     while chart_path and os.path.basename(chart_path) not in ("charts", ""):
         parent = os.path.dirname(chart_path)
-        # On s'arrête lorsque parent == "charts"
         if os.path.basename(parent) == "charts":
             break
         chart_path = parent
 
-    # Le dossier templates est à l'intérieur de la chart
     templates_dir = os.path.join(chart_path, "templates")
 
     if not os.path.exists(templates_dir):
@@ -42,10 +29,7 @@ def check(yaml_files, chart):
 
     violations = []
 
-    # Détecte un include
     include_pattern = re.compile(r"{{\s*include\s+\"[^\"]+\"\s*\.\s*([^}]*)}}")
-
-    # Détecte indent / nindent avec nombre
     indent_pattern = re.compile(r"\|\s*(nindent|indent)\s+\d+")
 
     for root, _, files in os.walk(templates_dir):
@@ -62,25 +46,29 @@ def check(yaml_files, chart):
                 if "include" not in line:
                     continue
 
+                stripped = line.strip()
+
+                # 🔹 Include inline → pas de règle d'indentation
+                if not (stripped.startswith("{{") and stripped.endswith("}}")):
+                    continue
+
                 match = include_pattern.search(line)
                 if not match:
                     continue
 
                 pipe_section = match.group(1)
 
-                # Cas 1 : pas de pipe → erreur
+                # Include seul sur sa ligne → indent requis
                 if "|" not in pipe_section:
                     violations.append(
-                        f"{filepath}:{i+1} → include sans '| indent N' ou '| nindent N'."
+                        f"{filepath}:{i+1} → include seul sur sa ligne sans '| indent N' ou '| nindent N'."
                     )
                     continue
 
-                # Cas 2 : pipe mais sans indent/nindent → erreur
                 if not indent_pattern.search(pipe_section):
                     violations.append(
-                        f"{filepath}:{i+1} → include utilise un pipe mais sans indent/nindent valide."
+                        f"{filepath}:{i+1} → include seul sur sa ligne avec pipe mais sans indent/nindent valide."
                     )
-                    continue
 
     return {
         "name": "include_indent_required",
@@ -89,7 +77,6 @@ def check(yaml_files, chart):
         "details": (
             "Aucune violation détectée."
             if not violations
-            else f"{len(violations)} problèmes trouvés. "
+            else f"{len(violations)} problèmes trouvés."
         )
     }
-
