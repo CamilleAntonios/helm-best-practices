@@ -1,4 +1,4 @@
 [repository]
-repo_url = "https://github.com/istio/istio.git"
-chart_folder_path = "manifests/sample-charts/ambient"
+repo_url = "https://github.com/opencost/opencost-helm-chart.git"
+chart_folder_path = "charts/opencost"
 months_range = 1
