@@ -3,14 +3,20 @@ import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 from code_smells_calculator import process_single_chart_detailed, load_check_functions
+from compute_graphs_ratio_per_file import OUTPUT_DIR
 from find_repo_tags import find_tags
 
-OUTPUT_DIR = "graphs_practices_over_time"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 REPO_BASE = Path("target-repo").resolve()
 
 
 checks = load_check_functions()
+
+
+def get_output_dir(repo_name: str, chart_name: str) -> Path:
+    out = Path("graphs_practices_over_time") / repo_name / chart_name
+    out.mkdir(parents=True, exist_ok=True)
+    return out
 
 
 def analyze_repo(repo_path: str, chart_path: str, months_range: int = 6):
@@ -59,7 +65,7 @@ def build_time_series(results):
     return dates, series
 
 
-def plot_per_practice(dates, series, repo_name, chart_name):
+def plot_per_practice(dates, series, output_dir, repo_name, chart_name):
     for practice, values in series.items():
         plt.figure(figsize=(8, 5))
         plt.plot(dates, values, marker="o")
@@ -71,11 +77,11 @@ def plot_per_practice(dates, series, repo_name, chart_name):
         plt.tight_layout()
 
         fname = f"{repo_name}_{chart_name}_{practice}.png".replace("/", "_")
-        plt.savefig(Path(OUTPUT_DIR) / fname)
+        plt.savefig(output_dir / fname)
         plt.close()
 
 
-def plot_stacked(dates, series, repo_name, chart_name):
+def plot_stacked(dates, series, output_dir, repo_name, chart_name):
     labels = list(series.keys())
     values = [series[p] for p in labels]
 
@@ -89,7 +95,7 @@ def plot_stacked(dates, series, repo_name, chart_name):
     plt.tight_layout()
 
     fname = f"{repo_name}_{chart_name}_STACKED.png".replace("/", "_")
-    plt.savefig(Path(OUTPUT_DIR) / fname)
+    plt.savefig(output_dir / fname)
     plt.close()
 
 
@@ -131,8 +137,10 @@ def main(toml_path: Path):
     repo_name = repo_path.name
     chart_name = Path(chart_path).name
 
-    plot_per_practice(dates, series, repo_name, chart_name)
-    plot_stacked(dates, series, repo_name, chart_name)
+    output_dir = get_output_dir(repo_name, chart_name)
+
+    plot_per_practice(dates, series, output_dir, repo_name, chart_name)
+    plot_stacked(dates, series, output_dir, repo_name, chart_name)
     print_stats(dates, series)
 
 
