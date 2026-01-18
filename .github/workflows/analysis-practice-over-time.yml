@@ -36,7 +36,7 @@ jobs:
           REPO_URL=$(python - <<EOF
           import tomli
           with open("graph-over-time.toml", "rb") as f:
-              print(tomli.load(f)["repository"]["repo_url"])
+              print(tomli.load(f)["repository"][0]["repo_url"])
           EOF
           )
           git clone "$REPO_URL" target-repo

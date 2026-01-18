@@ -1,4 +1,4 @@
-[[repository]]
+[repository]
 repo_url = "https://github.com/prometheus-community/helm-charts.git"
 chart_folder_path = "charts/alertmanager"
 months_range = 1
