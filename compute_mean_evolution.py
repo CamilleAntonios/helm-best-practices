@@ -8,6 +8,10 @@ from find_repo_tags import find_tags
 
 checks = load_check_functions()
 
+def keep_only_last_part(full_tag: list[str]) -> list[str]:
+    """Garde seulement la partie après le dernier '/' dans un tag complet pour chaque tag"""
+    return [tag.split("/")[-1] for tag in full_tag]
+
 def compute_smells_for_repo(repository_folder: str, chart_folder_path: str, tag_to_checkout: tuple[str, str]):
     print(
         f"Processing repo='{repository_folder}', "
@@ -125,11 +129,11 @@ def main(toml_path: Path):
         global_ratio_results[str(repository_folder) + str(chart_folder_path)] = (last_ratio_result - first_ratio_result) / first_ratio_result if first_ratio_result > 0 else 0
 
     plt.figure(figsize=(10, 6))
-    plt.plot(global_smells_results.keys(), global_smells_results.values(), marker='o')
-    plt.title(f"Code Smells per line over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.plot(keep_only_last_part(list(global_smells_results.keys())), global_smells_results.values(), marker='o')
+    plt.title(f"Code Smells (not ratio, pure number) evolution over Tags")
     plt.xlabel("Git Tags")
     plt.ylabel("Ratio of evolution between first and last tag")
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.autoscale("y")
     plt.grid(True)
     plt.tight_layout()
@@ -137,11 +141,11 @@ def main(toml_path: Path):
     plt.close()
 
     plt.figure(figsize=(10, 6))
-    plt.plot(global_lines_results.keys(), global_lines_results.values(), marker='o')
-    plt.title(f"Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.plot(keep_only_last_part(list(global_lines_results.keys())), global_lines_results.values(), marker='o')
+    plt.title(f"Lines over Tags")
     plt.xlabel("Git Tags")
     plt.ylabel("Ratio of evolution between first and last tag")
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.autoscale("y")
     plt.grid(True)
     plt.tight_layout()
@@ -149,11 +153,11 @@ def main(toml_path: Path):
     plt.close()
 
     plt.figure(figsize=(10, 6))
-    plt.plot(global_ratio_results.keys(), global_ratio_results.values(), marker='o')
-    plt.title(f"Code Smells per Lines over Tags\nRepository: {repository_folder}, Chart: {chart_folder_path}")
+    plt.plot(keep_only_last_part(list(global_ratio_results.keys())), global_ratio_results.values(), marker='o')
+    plt.title(f"Code Smells per Lines over Tags")
     plt.xlabel("Git Tags")
     plt.ylabel("Ratio of evolution between first and last tag")
-    plt.xticks(rotation=45)
+    plt.xticks(rotation=90)
     plt.autoscale("y")
     plt.grid(True)
     plt.tight_layout()
