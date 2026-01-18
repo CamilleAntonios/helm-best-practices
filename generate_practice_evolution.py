@@ -7,6 +7,8 @@ from find_repo_tags import find_tags
 
 OUTPUT_DIR = "graphs_practices_over_time"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+REPO_BASE = Path("target-repo").resolve()
+
 
 checks = load_check_functions()
 
@@ -118,7 +120,7 @@ def main(toml_path: Path):
         config = tomli.load(f)
 
     for repo in config["repositories"]:
-        repo_path = repo["repository_folder"]
+        repo_path = REPO_BASE
         chart_path = repo["chart_folder_path"]
 
         results = analyze_repo(repo_path, chart_path)
