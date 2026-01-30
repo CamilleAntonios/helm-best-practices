@@ -1,4 +1,8 @@
 # Étude des charts HELM
+# Où trouver nos résultats
+Les résultats, graphes, tableurs sont présents dans le dossier `RESULTATS_ETUDE`. 
+Si vous souhaitez les reproduire vous-même, la section suivante récapitule les étapes nécessaires.
+
 # Comment obtenir les graphes et résultats
 <span style="color: red;">**Première étape : décompressez le fichiers `repos_charts.zip`.**</span>
 Décompressez-le à la racine du projet, c'est-à-dire qu'une fois décompressé, il faut obtenir cette structure :
