@@ -21,7 +21,7 @@ Nous avons parfois eu des soucis d'exécution sur Windows que nous n'avons pas r
 
 Le script se base sur le fait que vous disposez de la commande `python`, et que vous disposez de python au minimum dans sa version `3.10.14`. Vous aurez besoin de `matplotlib` et `tomli` que vous possédez potentiellement déjà avec une installation typique de Python.
 
-## Détails de du repo
+## Structure du repo
 
 ### Fichiers de calculs de graphs
 #### `compute_graphs` 
