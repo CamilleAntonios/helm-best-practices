@@ -14,13 +14,6 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # -------------------------
 df = pd.read_csv("final_report.csv")
 
-# Clean ratio column (e.g. "0.71%")
-df["ratio"] = (
-    df["ratio"]
-    .str.replace("%", "", regex=False)
-    .astype(float)
-)
-
 # Clean days_ago (handle quoted values with comma decimal)
 def parse_days_ago(x):
     if isinstance(x, str):
@@ -30,7 +23,7 @@ def parse_days_ago(x):
 df["days_ago"] = df["days_ago"].apply(parse_days_ago)
 
 # Recompute ratio if needed (safety)
-df["ratio"] = df["code_smells"] / df["total_lines"] * 100
+df["ratio"] = df["code_smells"] / df["total_lines"]
 
 # -------------------------
 # Helper functions
@@ -42,7 +35,7 @@ def filter_top95(df, x_col, y_col):
     return df[(df[x_col] <= x_thresh) & (df[y_col] <= y_thresh)]
 
 def plot_scatter(x, y, data, label, filename, xlabel, ylabel):
-    plt.figure()
+    plt.figure(figsize=(10, 6))  # width, height in inches
     for name, group in data:
         group_filtered = filter_top95(group, x, y)
         plt.scatter(group_filtered[x], group_filtered[y], label=name, alpha=0.6)
@@ -59,11 +52,16 @@ def plot_scatter(x, y, data, label, filename, xlabel, ylabel):
 plot_scatter(
     x="stars",
     y="ratio",
-    data=df.groupby("origin"),
+    data=df.assign(
+    origin=df["origin"].replace({
+        "commu": "Créé par la communauté",
+        "entreprise": "Créé par une entreprise"
+    })
+    ).groupby("origin"),
     label="origin",
     filename="bad_practices_vs_stars_origin.png",
     xlabel="Nombre d'étoiles Artifactory",
-    ylabel="% de mauvaises pratiques par ligne"
+    ylabel="Nombre de mauvaises pratiques par ligne"
 )
 
 # -------------------------
@@ -72,14 +70,14 @@ plot_scatter(
 median_stars = df["stars"].median()
 df["stars_group"] = np.where(df["stars"] <= median_stars, "Sous médiane", "Au-dessus médiane")
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 for (origin, group_name), group in df.groupby(["origin", "stars_group"]):
     group_filtered = filter_top95(group, "stars", "ratio")
     label = f"{origin} - {group_name}"
     plt.scatter(group_filtered["stars"], group_filtered["ratio"], label=label, alpha=0.6)
 
 plt.xlabel("Nombre d'étoiles Artifactory")
-plt.ylabel("% de mauvaises pratiques par ligne")
+plt.ylabel("Nombre de mauvaises pratiques par ligne")
 plt.legend()
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_stars_median_split.png"))
@@ -91,21 +89,26 @@ plt.close()
 plot_scatter(
     x="total_lines",
     y="ratio",
-    data=df.groupby("origin"),
+    data=df.assign(
+    origin=df["origin"].replace({
+        "commu": "Créé par la communauté",
+        "entreprise": "Créé par une entreprise"
+    })
+    ).groupby("origin"),
     label="origin",
     filename="bad_practices_vs_total_lines.png",
     xlabel="Nombre total de lignes de configuration",
-    ylabel="% de mauvaises pratiques par ligne"
+    ylabel="Nombre de mauvaises pratiques par ligne"
 )
 
 # -------------------------
 # 4. Bad practices vs days ago
 # -------------------------
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 df_filtered = filter_top95(df, "days_ago", "ratio")
 plt.scatter(df_filtered["days_ago"], df_filtered["ratio"], alpha=0.6)
 plt.xlabel("Derniere release (days ago)")
-plt.ylabel("% de mauvaises pratiques par ligne")
+plt.ylabel("Nombre de mauvaises pratiques par ligne")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_vs_days_ago.png"))
 plt.close()
@@ -114,18 +117,32 @@ plt.close()
 # 5. Quartiles of days_ago (bar chart)
 # -------------------------
 df_filtered = filter_top95(df, "days_ago", "ratio")
+
+quartiles, bins = pd.qcut(
+    df_filtered["days_ago"],
+    q=4,
+    retbins=True,
+    duplicates="drop"
+)
+
+labels = [
+    f"Q{i+1} ({int(bins[i])} → {int(bins[i+1])} jours)"
+    for i in range(len(bins) - 1)
+]
+
 df_filtered["days_quartile"] = pd.qcut(
     df_filtered["days_ago"],
     q=4,
-    labels=["Q1 (plus récent)", "Q2", "Q3", "Q4 (plus ancien)"]
+    labels=labels,
+    duplicates="drop"
 )
 
 quartile_means = df_filtered.groupby("days_quartile")["ratio"].mean()
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 quartile_means.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par ligne")
-plt.xlabel("Quartiles de Days Ago")
+plt.ylabel("Nombre moyen de mauvaises pratiques par ligne")
+plt.xlabel("Quartiles de jours depuis la dernière release")
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "bad_practices_by_days_ago_quartiles.png"))
 plt.close()
@@ -136,13 +153,12 @@ plt.close()
 df_filtered = filter_top95(df, "ratio", "ratio")  # Se focaliser sur ratio
 mean_ratios = df_filtered.groupby("origin")["ratio"].mean()
 
-plt.figure()
+plt.figure(figsize=(10, 6))  # width, height in inches
 mean_ratios.plot(kind="bar")
-plt.ylabel("% moyen de mauvaises pratiques par ligne")
+plt.ylabel("Nombre moyen de mauvaises pratiques par ligne")
 plt.xlabel("Origine du chart")
 plt.title(
-    "ATTENTION : ce chiffre seul n'est PAS représentatif\n"
-    "(il exclut les étoiles, la taille et la fraîcheur du projet)"
+    "Nombre moyen de mauvaises pratiques par ligne : Communauté vs Entreprise"
 )
 plt.tight_layout()
 plt.savefig(os.path.join(OUTPUT_DIR, "mean_bad_practices_commu_vs_entreprise.png"))
