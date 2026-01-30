@@ -14,3 +14,6 @@ python aggregate_csv.py
 python compute_graphs.py
 python compute_graphs_peaks_excluded.py
 python compute_graphs_ratio_per_file.py
+
+# Calcul de l'évolution moyenne
+python compute_mean_evolution.py
