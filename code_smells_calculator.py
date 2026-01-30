@@ -88,6 +88,7 @@ def process_single_chart_detailed(chart, checks):
         "by_practice": by_practice
     }
 
+
 def process_single_chart(chart, checks=None):
     if checks is None:
         print("Checks were not provided, loading them...")
@@ -108,9 +109,6 @@ def process_single_chart(chart, checks=None):
     print("")
 
     return codeSmells, lines, files
-
-
-
 
 def main():
     print("Chargement des checks...")

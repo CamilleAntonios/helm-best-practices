@@ -1,20 +1,19 @@
 import subprocess
-from pathlib import Path
+import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-
 
 def git(cmd, fault_on_error=True):
     """Execute a git command and return its output as a string."""
     result = subprocess.run(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
     )
     if fault_on_error and result.returncode != 0:
-        raise RuntimeError(
-            f"Git command {' '.join(cmd)} failed with error: {result.stderr}"
-        )
+        raise RuntimeError(f"Git command {' '.join(cmd)} failed with error: {result.stderr}")
     return result.stdout
-
 
 def find_tags(months_range: int, repo_path: str):
     current_dir = os.getcwd()
@@ -39,5 +38,6 @@ def find_tags(months_range: int, repo_path: str):
             selected.append((sha, commit_date.date()))
             last_date = commit_date
 
-    print("Selected commits:", selected)
-    return selected  # List[(sha, date)]
+    os.chdir(current_dir)
+    print("selected tags: ", selected)
+    return selected # List of tuples (sha, date)

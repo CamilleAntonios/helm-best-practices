@@ -69,7 +69,7 @@ def main(toml_path: Path):
         repository_folder = repo["repository_folder"]
         chart_folder_path = repo["chart_folder_path"]
 
-        tags_to_checkout = find_tags(6, repository_folder)
+        tags_to_checkout = find_tags(1, repository_folder)
 
         print("tags to checkout: ", tags_to_checkout)
 
