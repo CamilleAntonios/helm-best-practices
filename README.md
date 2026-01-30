@@ -42,6 +42,16 @@ Permet d'évaluer l'évolution du ratio de mauvaises pratiques au fil du temps.
 #### `find_repo_tags`
 Utilisé pour obtenir les commits à vérifier lors de l'étude de l'évolution au fil du temps.
 
+### Dossiers des graphes produits
+#### `graphs`
+Contient les graphes "par défaut", portant sur l'étude de tous nos critères, par rapport au nombre de lignes. 
+
+#### `graphs_ratio_per_file`
+Comme `graphs`, mais effectue le ratio par rapport au nombre de fichiers plutôt que par rapport au nombre de lignes.
+
+#### `graphs_with_peaks_excluded`
+Comme `graphs`, mais exclue les valeurs dont l'abscisse est plus grande que 95% des autres abscisses ou dont l'ordonnée est plus grande que 95% des autres ordonnées, afin d'exclure les valeurs extrêmes.
+
 ### Fichiers CSV
 #### `chart_infos.csv`
 Contient les infos qu'on a noté sur Google Drive : dernières deliveries, provenance de la chart ...
