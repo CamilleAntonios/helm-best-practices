@@ -2,6 +2,11 @@ name: Helm Chart Practice Evolution Analysis
 
 on:
   push:
+    paths:
+      - '.github/workflows/analysis-practice-over-time.yml'
+      - 'graph-analyze-practice.toml'
+      - 'generate_practice_evolution.py'
+      - 'code_smells_calculator.py'
 
 jobs:
   analyze:
