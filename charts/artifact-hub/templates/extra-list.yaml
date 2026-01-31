@@ -1,4 +1,0 @@
-{{- range .Values.extraDeploy }}
----
-{{ include "chart.tplvalues.render" (dict "value" . "context" $) }}
-{{- end }}

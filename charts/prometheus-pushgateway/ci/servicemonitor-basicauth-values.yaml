@@ -1,8 +1,0 @@
----
-webConfiguration:
-  basicAuthUsers:
-    job: A7ERGdgwLHnY
-
-serviceMonitor:
-  enabled: true
-  namespace: null

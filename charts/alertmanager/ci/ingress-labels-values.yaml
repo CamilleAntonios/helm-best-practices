@@ -1,6 +1,0 @@
----
-ingress:
-  enabled: true
-  labels:
-    foo: bar
-    baz: qux

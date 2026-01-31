@@ -1,3 +1,0 @@
-Inspektor Gadget {{ .Chart.AppVersion | quote }} installed successfully!
-
-For usage details, visit {{ .Chart.Home }}
