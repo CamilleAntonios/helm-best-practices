@@ -166,13 +166,6 @@ Résultat des codes smells
 #### `final_report.csv` (généré par `aggregate_csv.py`)
 Fait le lien entre `chart_infos.csv` et `code_smells_report.csv`, pour mettre dans un unique fichier toutes les infos nécessaires pour calculer les graphs. Le join se fait sur le nom de la chart, et ce doit donc être STRICTEMENT le même dans les deux fichiers CSV sources.
 
-
-#### `final_report.csv` (généré par les scripts)
-fichier généré par code_smells_calculator.py.
-Il contient le détail des mauvaises pratiques par chart et par type de pratique.
-Ce fichier est notamment utilisé par :
-stacked_ratio_by_chart.py pour générer le graphique de répartition des mauvaises pratiques par chart, les analyses statistiques globales (fréquence des pratiques, pratiques rares ou dominantes, analyse de Pareto).
-
 ### Dossiers des charts
 #### `charts`
 Contient des dossiers contenant exactement les charts.
