@@ -1,0 +1,340 @@
+{{- with .Values }}
+{{- if not (and .rbac .rbac.only) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "traffic-manager.name" $ }}
+  namespace: {{ include "traffic-manager.namespace" $ }}
+  labels:
+    {{ include "telepresence.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      {{ include "telepresence.selectorLabels" $ | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Allows creating one extra pod during the update
+      maxUnavailable: 0  # Ensures no pods are terminated until new ones are ready
+  template:
+    metadata:
+    {{- with .podAnnotations }}
+      annotations:
+        {{ toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{ include "telepresence.selectorLabels" $ | nindent 8 }}
+    {{- with .podLabels }}
+        {{ toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+      {{- with .image.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{ toYaml .podSecurityContext | nindent 8 }}
+      {{- if .hostNetwork }}
+      hostNetwork: true
+      {{- end }}
+      containers:
+        - name: {{ include "traffic-manager.name" $ }}
+          securityContext:
+            {{ toYaml .securityContext | nindent 12 }}
+          {{- with .image }}
+          image: "{{ .registry }}/{{ .name }}:{{ .tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+          env:
+          - name: LOG_LEVEL
+            value: {{ .logLevel }}
+          {{- with .image }}
+          - name: REGISTRY
+            value: "{{ .registry }}"
+          {{- end }}
+          - name: SERVER_PORT
+            value: {{ .apiPort | quote }}
+          - name: POD_CIDR_STRATEGY
+            value: {{ .podCIDRStrategy }}
+          {{- with .podCIDRs }}
+          - name: POD_CIDRS
+            value: "{{ join " " . }}"
+          {{- end }}
+          {{- if .agentInjector.enabled }}
+          - name: MUTATOR_WEBHOOK_PORT
+            value: {{ .agentInjector.webhook.port | quote }}
+          - name: AGENT_INJECTOR_SECRET
+          {{- if eq .agentInjector.certificate.accessMethod "mount" }}
+            value: /var/run/secrets/tls
+          {{- else }}
+            value: {{ .agentInjector.secret.name }}
+          {{- end }}
+          {{- end }}
+          {{- with .telepresenceAPI }}
+          {{- if .port }}
+          - name: AGENT_REST_API_PORT
+            value: {{ .port | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with .grpc }}
+          {{- if .maxReceiveSize }}
+          - name: GRPC_MAX_RECEIVE_SIZE
+            value: {{ .maxReceiveSize }}
+          {{- if and .connectionTTL (not $.Values.client.connectionTTL) }}
+          - name: CLIENT_CONNECTION_TTL
+            value: {{ .connectionTTL }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .workloads }}
+          {{- with .workloads }}
+          - name: ENABLED_WORKLOAD_KINDS
+            value: >-
+              {{- if or (not .deployments) .deployments.enabled }}
+              Deployment
+              {{- end }}
+              {{- if or (not .statefulSets) .statefulSets.enabled }}
+              StatefulSet
+              {{- end }}
+              {{- if or (not .replicaSets) .replicaSets.enabled }}
+              ReplicaSet
+              {{- end }}
+              {{- if and .argoRollouts .argoRollouts.enabled }}
+              Rollout
+              {{- end }}
+          {{- end }}
+          {{- else }}
+          - name: ENABLED_WORKLOAD_KINDS
+            value: Deployment StatefulSet ReplicaSet
+          {{- end }}
+          {{- with .intercept }}
+          {{- if not (eq .allowGlobalIntercepts nil) }}
+          - name: INTERCEPT_ALLOW_GLOBAL
+            value: {{ .allowGlobalIntercepts | quote }}
+          {{- end }}
+          {{- end }}
+      {{- if .agentInjector.enabled }}
+        {{- /*
+        Traffic agent injector configuration
+        */}}
+          - name: AGENT_ARRIVAL_TIMEOUT
+            value: {{ quote (default "30s" .timeouts.agentArrival) }}
+          {{- with .agentInjector }}
+          - name: AGENT_INJECT_POLICY
+            value: {{ .injectPolicy }}
+          - name: AGENT_INJECTOR_NAME
+            value:  {{ .name | quote }}
+          - name: AGENT_INJECTOR_MUTATION_AWARE
+            value: {{ (default false .mutationAware) | quote }}
+          {{- end }}
+        {{- /*
+        Traffic agent configuration
+        */}}
+          {{- with .agent }}
+          {{- if .logLevel }}
+          - name: AGENT_LOG_LEVEL
+            value: {{ .logLevel }}
+          {{- end }}
+          {{- if .port }}
+          - name: AGENT_PORT
+            value: {{ .port | quote }}
+          {{- end }}
+          - name: AGENT_ENABLE_H2C_PROBING
+            value: {{ (default false .enableH2cProbing) | quote }}
+          - name: AGENT_CONSUMPTION_METRICS
+            value: {{ (default true .enableConsumptionMetrics) | quote }}
+          {{- if .resources }}
+          - name: AGENT_RESOURCES
+            value: '{{ toJson .resources }}'
+          {{- end }}
+          {{- if .initResources }}
+          - name: AGENT_INIT_RESOURCES
+            value: '{{ toJson .initResources }}'
+          {{- end }}
+          {{- if .mountPolicies }}
+          - name: AGENT_MOUNT_POLICIES
+            value: '{{ toJson .mountPolicies }}'
+          {{- end }}
+          {{- if .maxIdleTime }}
+          - name: AGENT_MAX_IDLE_TIME
+            value: {{ .maxIdleTime }}
+          {{- end }}
+          {{- with .initContainer }}
+          - name: AGENT_INIT_CONTAINER_ENABLED
+            value: {{ .enabled | quote  }}
+          {{- end }}
+          {{- with .image }}
+          {{- if .name }}
+          - name: AGENT_IMAGE_NAME
+            value: {{ .name }}
+          {{- end }}
+          {{- if .tag }}
+          - name: AGENT_IMAGE_TAG
+            value: {{ .tag }}
+          {{- end }}
+          {{- if .registry }}
+          - name: AGENT_REGISTRY
+            value: {{ .registry }}
+          {{- end }}
+          {{- with .pullSecrets }}
+          - name: AGENT_IMAGE_PULL_SECRETS
+            value: '{{ toJson . }}'
+          {{- end }}
+          - name: AGENT_IMAGE_PULL_POLICY
+            value: {{ .pullPolicy }}
+          {{- end }}
+          {{- /* must check against nil. An empty security context is a valid override */}}
+          {{- if not (eq .securityContext nil) }}
+          - name: AGENT_SECURITY_CONTEXT
+            value: '{{ toJson .securityContext }}'
+          {{- end }}
+          {{- /* must check against nil. An empty security context is a valid override */}}
+          {{- if not (eq .initSecurityContext nil) }}
+          - name: AGENT_INIT_SECURITY_CONTEXT
+            value: '{{ toJson .initSecurityContext }}'
+          {{- end }}
+          {{- if .watchRetryInterval }}
+          - name: AGENT_WATCH_RETRY_INTERVAL
+            value: .watchRetryInterval
+          {{- end }}
+          {{- end }}
+          {{- with fromJsonArray (include "traffic-manager.namespaces" $) }}
+          {{- /*
+           This environment variable is not used, it is here to force a redeploy of the traffic manager when the list
+           changes, because it updates roles and rolebindings and potentially also changes from roles to clusterroles or
+           vice versa.
+           */}}
+          - name: NOT_USED_NSS
+            value: {{ toJson . | quote }}
+          {{- end }}
+      {{- end }}
+        {{- with .prometheus }}
+          {{- if .port }}  # 0 is false
+          - name: PROMETHEUS_PORT
+            value: "{{ .port }}"
+          {{- end }}
+          {{- if .dropClientLabel }}
+          - name: PROMETHEUS_DROP_CLIENT_LABEL
+            value: "{{ .dropClientLabel }}"
+          {{- end }}
+        {{- end }}
+          - name: MAX_NAMESPACE_SPECIFIC_WATCHERS
+            value: {{.maxNamespaceSpecificWatchers | quote }}
+          - name: MANAGER_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+         {{- /*
+        Client configuration
+        */}}
+          {{- with .client }}
+          {{- if .connectionTTL }}
+          - name: CLIENT_CONNECTION_TTL
+            value: {{ .connectionTTL }}
+          {{- end }}
+          {{- with .routing }}
+          {{- if .alsoProxySubnets }}
+          - name: CLIENT_ROUTING_ALSO_PROXY_SUBNETS
+            value: "{{ join " " .alsoProxySubnets }}"
+          {{- end }}
+          {{- if .neverProxySubnets }}
+          - name: CLIENT_ROUTING_NEVER_PROXY_SUBNETS
+            value: "{{ join " " .neverProxySubnets }}"
+          {{- end }}
+          {{- if .allowConflictingSubnets }}
+          - name: CLIENT_ROUTING_ALLOW_CONFLICTING_SUBNETS
+            value: "{{ join " " .allowConflictingSubnets }}"
+          {{- end }}
+          {{- end }}
+          {{- with .dns }}
+          {{- with .excludeSuffixes }}
+          - name: CLIENT_DNS_EXCLUDE_SUFFIXES
+            value: "{{ join " " . }}"
+          {{- end }}
+          {{- with .includeSuffixes }}
+          - name: CLIENT_DNS_INCLUDE_SUFFIXES
+            value: "{{ join " " . }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with .compatibility }}
+          {{- if .version }}
+          - name: COMPATIBILITY_VERSION
+            value: {{ .version }}
+          {{- end }}
+          {{- end }}
+          ports:
+          - name: api
+            containerPort: {{ .apiPort }}
+          - name: https
+            containerPort: {{ .agentInjector.webhook.port }}
+          {{- if .prometheus.port }}  # 0 is false
+          - name: prometheus
+            containerPort: {{ .prometheus.port }}
+          {{- end }}
+          {{- with .livenessProbe }}
+          livenessProbe:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          startupProbe:
+          {{- with .startupProbe }}
+            {{ toYaml . | nindent 12 }}
+          {{- else }}
+            grpc:
+              port: {{ .apiPort }}
+            periodSeconds: 2
+            failureThreshold: 5
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+      {{- if eq .agentInjector.certificate.accessMethod "mount" }}
+          volumeMounts:
+          {{- if .agentInjector.enabled }}
+            - name: tls
+              mountPath: /var/run/secrets/tls
+              readOnly: true
+          {{- end }}
+      {{- end }}
+      {{- with .schedulerName }}
+      schedulerName: {{ . }}
+      {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
+  {{- if eq .agentInjector.certificate.accessMethod "mount" }}
+      volumes:
+        {{- if .agentInjector.enabled }}
+        - name: tls
+          secret:
+            defaultMode: 420
+            secretName: {{ .agentInjector.secret.name }}
+        {{- end }}
+  {{- end }}
+      serviceAccountName: traffic-manager
+{{- end }}
+{{- end }}

@@ -1,0 +1,23 @@
+global:
+  jobs:
+    kubectl:
+      ttlSecondsAfterFinished: 120
+crds:
+  install: true
+  keep: false
+options:
+  enableSSL: true
+  generateCertificates: false
+certManager:
+  generateCertificates: true
+  certificate:
+    dnsNames:
+      - "localhost"
+    ipAddresses:
+      - "127.0.0.1"
+    uris:
+      - "spiffe://cluster.local/ns/sandbox/sa/example"
+    fields:
+      privateKey:
+        rotationPolicy: 'Always'
+      renewBefore: '24h'
